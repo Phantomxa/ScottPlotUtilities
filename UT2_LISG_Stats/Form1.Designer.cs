@@ -42,6 +42,8 @@
             tbMovingAverage = new ReaLTaiizor.Controls.PoisonTextBox();
             lbSlope = new ReaLTaiizor.Controls.PoisonLabel();
             tbSlope = new ReaLTaiizor.Controls.PoisonTextBox();
+            lbLoess = new ReaLTaiizor.Controls.PoisonLabel();
+            tbLoess = new ReaLTaiizor.Controls.PoisonTextBox();
             tableLayoutPanel1.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
             SuspendLayout();
@@ -60,7 +62,7 @@
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.Size = new Size(1036, 450);
+            tableLayoutPanel1.Size = new Size(1092, 450);
             tableLayoutPanel1.TabIndex = 0;
             // 
             // formsPlot2
@@ -69,7 +71,7 @@
             formsPlot2.Dock = DockStyle.Fill;
             formsPlot2.Location = new Point(3, 248);
             formsPlot2.Name = "formsPlot2";
-            formsPlot2.Size = new Size(1030, 199);
+            formsPlot2.Size = new Size(1086, 199);
             formsPlot2.TabIndex = 3;
             // 
             // formsPlot1
@@ -78,7 +80,7 @@
             formsPlot1.Dock = DockStyle.Fill;
             formsPlot1.Location = new Point(3, 43);
             formsPlot1.Name = "formsPlot1";
-            formsPlot1.Size = new Size(1030, 199);
+            formsPlot1.Size = new Size(1086, 199);
             formsPlot1.TabIndex = 0;
             // 
             // flowLayoutPanel1
@@ -93,10 +95,12 @@
             flowLayoutPanel1.Controls.Add(tbMovingAverage);
             flowLayoutPanel1.Controls.Add(lbSlope);
             flowLayoutPanel1.Controls.Add(tbSlope);
+            flowLayoutPanel1.Controls.Add(lbLoess);
+            flowLayoutPanel1.Controls.Add(tbLoess);
             flowLayoutPanel1.Dock = DockStyle.Fill;
             flowLayoutPanel1.Location = new Point(3, 3);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
-            flowLayoutPanel1.Size = new Size(1030, 34);
+            flowLayoutPanel1.Size = new Size(1086, 34);
             flowLayoutPanel1.TabIndex = 4;
             // 
             // tbTower1
@@ -207,7 +211,7 @@
             tbMovingAverage.CustomButton.Visible = false;
             tbMovingAverage.Lines = new string[]
     {
-    "55"
+    "300"
     };
             tbMovingAverage.Location = new Point(868, 3);
             tbMovingAverage.MaxLength = 32767;
@@ -220,7 +224,7 @@
             tbMovingAverage.ShortcutsEnabled = true;
             tbMovingAverage.Size = new Size(22, 23);
             tbMovingAverage.TabIndex = 0;
-            tbMovingAverage.Text = "55";
+            tbMovingAverage.Text = "300";
             tbMovingAverage.UseSelectable = true;
             tbMovingAverage.WaterMarkColor = Color.FromArgb(109, 109, 109);
             tbMovingAverage.WaterMarkFont = new Font("Segoe UI", 12F, FontStyle.Italic, GraphicsUnit.Pixel);
@@ -268,11 +272,54 @@
             tbSlope.WaterMarkColor = Color.FromArgb(109, 109, 109);
             tbSlope.WaterMarkFont = new Font("Segoe UI", 12F, FontStyle.Italic, GraphicsUnit.Pixel);
             // 
+            // lbLoess
+            // 
+            lbLoess.AutoSize = true;
+            lbLoess.Location = new Point(972, 0);
+            lbLoess.Name = "lbLoess";
+            lbLoess.Size = new Size(40, 19);
+            lbLoess.TabIndex = 9;
+            lbLoess.Text = "Loess";
+            // 
+            // tbLoess
+            // 
+            // 
+            // 
+            // 
+            tbLoess.CustomButton.Image = null;
+            tbLoess.CustomButton.Location = new Point(4, 1);
+            tbLoess.CustomButton.Name = "";
+            tbLoess.CustomButton.Size = new Size(21, 21);
+            tbLoess.CustomButton.Style = ReaLTaiizor.Enum.Poison.ColorStyle.Blue;
+            tbLoess.CustomButton.TabIndex = 1;
+            tbLoess.CustomButton.Theme = ReaLTaiizor.Enum.Poison.ThemeStyle.Light;
+            tbLoess.CustomButton.UseSelectable = true;
+            tbLoess.CustomButton.Visible = false;
+            tbLoess.Lines = new string[]
+    {
+    "0.05"
+    };
+            tbLoess.Location = new Point(1018, 3);
+            tbLoess.MaxLength = 32767;
+            tbLoess.Name = "tbLoess";
+            tbLoess.PasswordChar = '\0';
+            tbLoess.ScrollBars = ScrollBars.None;
+            tbLoess.SelectedText = "";
+            tbLoess.SelectionLength = 0;
+            tbLoess.SelectionStart = 0;
+            tbLoess.ShortcutsEnabled = true;
+            tbLoess.Size = new Size(26, 23);
+            tbLoess.TabIndex = 10;
+            tbLoess.Text = "0.05";
+            tbLoess.UseSelectable = true;
+            tbLoess.WaterMarkColor = Color.FromArgb(109, 109, 109);
+            tbLoess.WaterMarkFont = new Font("Segoe UI", 12F, FontStyle.Italic, GraphicsUnit.Pixel);
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1036, 450);
+            ClientSize = new Size(1092, 450);
             Controls.Add(tableLayoutPanel1);
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
@@ -299,5 +346,7 @@
         private ReaLTaiizor.Controls.PoisonLabel lbMovingAverage;
         private ReaLTaiizor.Controls.PoisonLabel lbSlope;
         private ReaLTaiizor.Controls.PoisonTextBox tbSlope;
+        private ReaLTaiizor.Controls.PoisonLabel lbLoess;
+        private ReaLTaiizor.Controls.PoisonTextBox tbLoess;
     }
 }

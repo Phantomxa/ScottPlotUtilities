@@ -14,6 +14,7 @@ public partial class Form1 : Form
     int counter = 0;
     int movingAverageWindowSize;
     int slopeWindowSize;
+    double loessWindowSize;
     public string clad;
     List<string> legendItems = new();
     Dictionary<string, IPlottable> seriesDict = new Dictionary<string, IPlottable>();
@@ -45,7 +46,7 @@ public partial class Form1 : Form
         formsPlot1.MouseMove += FormsPlot1_MouseMove;
         formsPlot1.MouseDown += FormsPlot1_MouseDown;
         formsPlot1.MouseUp += FormsPlot1_MouseUp;
-
+        
         // add a rectangle we can use as a selection indicator
         RectanglePlot = formsPlot1.Plot.Add.Rectangle(0, 0, 0, 0);
         RectanglePlot.FillStyle.Color = Colors.Red.WithAlpha(.2);
@@ -53,6 +54,7 @@ public partial class Form1 : Form
 
         movingAverageWindowSize = int.Parse(tbMovingAverage.Text);
         slopeWindowSize = int.Parse(tbSlope.Text);
+        loessWindowSize = Convert.ToDouble(tbLoess.Text);
     }
 
     private void tbTower1_Click(object sender, EventArgs e)
@@ -73,6 +75,7 @@ public partial class Form1 : Form
         string tower = tbMovingAverage.Text;
         movingAverageWindowSize = int.Parse(tbMovingAverage.Text);
         slopeWindowSize = int.Parse(tbSlope.Text);
+        loessWindowSize = Convert.ToDouble(tbLoess.Text);
 
         int.TryParse(tbTower1.Text, out int towerInt);
 
@@ -491,6 +494,7 @@ public partial class Form1 : Form
         RectanglePlot.IsVisible = false;
         movingAverageWindowSize = int.Parse(tbMovingAverage.Text);
         slopeWindowSize = int.Parse(tbSlope.Text);
+        loessWindowSize = Convert.ToDouble(tbLoess.Text);
 
         // clear old markers
         formsPlot1.Plot.Remove<ScottPlot.Plottables.Marker>();
@@ -499,8 +503,10 @@ public partial class Form1 : Form
         {
             formsPlot1.Plot.Remove(seriesDict["Moving Average"]);
             formsPlot1.Plot.Remove(seriesDict["Slope"]);
+            formsPlot1.Plot.Remove(seriesDict["Loess Fit"]);
             seriesDict.Remove("Moving Average");
-            seriesDict.Remove("Slope"); 
+            seriesDict.Remove("Slope");
+            seriesDict.Remove("Loess Fit");
         }
 
         // identify selectedPoints
@@ -530,8 +536,12 @@ public partial class Form1 : Form
         DateTime[] xSlopeValues = myTable.AsEnumerable().Select(x => DateTime.FromOADate(x.Field<double>("X"))).ToArray();
         double[] ySlopeValues = myTable.AsEnumerable().Select(x => (double)x.Field<float>("Y_Slope")).ToArray();
 
+        double[] loessXValues = xCladValues.AsEnumerable().Select(x => x.ToOADate()).ToArray();
+        double[] loessYValues = Loess.OptimizedLoess(loessXValues, yCladValues, loessWindowSize);
+
+        CreateScottSignalXY(xCladValues, loessYValues, formsPlot1, "Loess Fit", System.Drawing.Color.LightSeaGreen, seriesDict);
         CreateScottSignalXY(xCladValues, yCladValues, formsPlot1, "Moving Average", System.Drawing.Color.BlueViolet, seriesDict);
-        CreateScottSignalXY(xSlopeValues, ySlopeValues, formsPlot1, "Slope", seriesDict);
+        CreateScottSignalXY(xSlopeValues, ySlopeValues, formsPlot1, "Slope", System.Drawing.Color.LightPink, seriesDict);
 
         myTable.Reset();
 
