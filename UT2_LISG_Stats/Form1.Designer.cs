@@ -29,8 +29,6 @@
         private void InitializeComponent()
         {
             tableLayoutPanel1 = new TableLayoutPanel();
-            formsPlot2 = new ScottPlot.WinForms.FormsPlot();
-            formsPlot1 = new ScottPlot.WinForms.FormsPlot();
             flowLayoutPanel1 = new FlowLayoutPanel();
             tbTower1 = new ReaLTaiizor.Controls.PoisonTextBox();
             poisonDateTime1 = new ReaLTaiizor.Controls.PoisonDateTime();
@@ -44,17 +42,23 @@
             tbSlope = new ReaLTaiizor.Controls.PoisonTextBox();
             lbLoess = new ReaLTaiizor.Controls.PoisonLabel();
             tbLoess = new ReaLTaiizor.Controls.PoisonTextBox();
+            formsPlot1 = new ScottPlot.WinForms.FormsPlot();
+            flowLayoutPanel2 = new FlowLayoutPanel();
+            formsPlot2 = new ScottPlot.WinForms.FormsPlot();
+            formsPlot3 = new ScottPlot.WinForms.FormsPlot();
             tableLayoutPanel1.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
+            flowLayoutPanel2.SuspendLayout();
             SuspendLayout();
             // 
             // tableLayoutPanel1
             // 
+            tableLayoutPanel1.AutoScroll = true;
             tableLayoutPanel1.ColumnCount = 1;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.Controls.Add(formsPlot2, 0, 2);
-            tableLayoutPanel1.Controls.Add(formsPlot1, 0, 1);
             tableLayoutPanel1.Controls.Add(flowLayoutPanel1, 0, 0);
+            tableLayoutPanel1.Controls.Add(formsPlot1, 0, 1);
+            tableLayoutPanel1.Controls.Add(flowLayoutPanel2, 0, 2);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -62,26 +66,8 @@
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.Size = new Size(1092, 450);
+            tableLayoutPanel1.Size = new Size(1076, 450);
             tableLayoutPanel1.TabIndex = 0;
-            // 
-            // formsPlot2
-            // 
-            formsPlot2.DisplayScale = 1F;
-            formsPlot2.Dock = DockStyle.Fill;
-            formsPlot2.Location = new Point(3, 248);
-            formsPlot2.Name = "formsPlot2";
-            formsPlot2.Size = new Size(1086, 199);
-            formsPlot2.TabIndex = 3;
-            // 
-            // formsPlot1
-            // 
-            formsPlot1.DisplayScale = 1F;
-            formsPlot1.Dock = DockStyle.Fill;
-            formsPlot1.Location = new Point(3, 43);
-            formsPlot1.Name = "formsPlot1";
-            formsPlot1.Size = new Size(1086, 199);
-            formsPlot1.TabIndex = 0;
             // 
             // flowLayoutPanel1
             // 
@@ -100,7 +86,7 @@
             flowLayoutPanel1.Dock = DockStyle.Fill;
             flowLayoutPanel1.Location = new Point(3, 3);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
-            flowLayoutPanel1.Size = new Size(1086, 34);
+            flowLayoutPanel1.Size = new Size(1070, 34);
             flowLayoutPanel1.TabIndex = 4;
             // 
             // tbTower1
@@ -315,11 +301,48 @@
             tbLoess.WaterMarkColor = Color.FromArgb(109, 109, 109);
             tbLoess.WaterMarkFont = new Font("Segoe UI", 12F, FontStyle.Italic, GraphicsUnit.Pixel);
             // 
+            // formsPlot1
+            // 
+            formsPlot1.DisplayScale = 1F;
+            formsPlot1.Dock = DockStyle.Fill;
+            formsPlot1.Location = new Point(3, 43);
+            formsPlot1.Name = "formsPlot1";
+            formsPlot1.Size = new Size(1070, 199);
+            formsPlot1.TabIndex = 5;
+            formsPlot1.ClientSizeChanged += formsPlot1_ClientSizeChanged;
+            // 
+            // flowLayoutPanel2
+            // 
+            flowLayoutPanel2.AutoScroll = true;
+            flowLayoutPanel2.Controls.Add(formsPlot2);
+            flowLayoutPanel2.Controls.Add(formsPlot3);
+            flowLayoutPanel2.Dock = DockStyle.Fill;
+            flowLayoutPanel2.Location = new Point(3, 248);
+            flowLayoutPanel2.Name = "flowLayoutPanel2";
+            flowLayoutPanel2.Size = new Size(1070, 199);
+            flowLayoutPanel2.TabIndex = 6;
+            // 
+            // formsPlot2
+            // 
+            formsPlot2.DisplayScale = 1F;
+            formsPlot2.Location = new Point(3, 3);
+            formsPlot2.Name = "formsPlot2";
+            formsPlot2.Size = new Size(1045, 199);
+            formsPlot2.TabIndex = 0;
+            // 
+            // formsPlot3
+            // 
+            formsPlot3.DisplayScale = 1F;
+            formsPlot3.Location = new Point(3, 208);
+            formsPlot3.Name = "formsPlot3";
+            formsPlot3.Size = new Size(1045, 199);
+            formsPlot3.TabIndex = 1;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1092, 450);
+            ClientSize = new Size(1076, 450);
             Controls.Add(tableLayoutPanel1);
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
@@ -327,14 +350,13 @@
             tableLayoutPanel1.ResumeLayout(false);
             flowLayoutPanel1.ResumeLayout(false);
             flowLayoutPanel1.PerformLayout();
+            flowLayoutPanel2.ResumeLayout(false);
             ResumeLayout(false);
         }
 
         #endregion
 
         private TableLayoutPanel tableLayoutPanel1;
-        private ScottPlot.WinForms.FormsPlot formsPlot1;
-        private ScottPlot.WinForms.FormsPlot formsPlot2;
         private FlowLayoutPanel flowLayoutPanel1;
         private ReaLTaiizor.Controls.PoisonTextBox tbMovingAverage;
         private ReaLTaiizor.Controls.PoisonTextBox tbTower1;
@@ -348,5 +370,9 @@
         private ReaLTaiizor.Controls.PoisonTextBox tbSlope;
         private ReaLTaiizor.Controls.PoisonLabel lbLoess;
         private ReaLTaiizor.Controls.PoisonTextBox tbLoess;
+        private ScottPlot.WinForms.FormsPlot formsPlot1;
+        private FlowLayoutPanel flowLayoutPanel2;
+        private ScottPlot.WinForms.FormsPlot formsPlot2;
+        private ScottPlot.WinForms.FormsPlot formsPlot3;
     }
 }

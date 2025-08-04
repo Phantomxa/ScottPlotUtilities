@@ -5,7 +5,7 @@ namespace UT2_LISG_Stats;
 
 class SybaseConnect
 {
-    public DataTable ConnectDBNew(string query)
+    public DataTable ConnectDB(string query)
     {
         var _connectionString = "Driver={SYBASE ASE ODBC Driver};Srvr=sybdev2;Uid=bautistaje;Pwd=Happy@128;Db=dsdb;";
         var dt = new DataTable();
@@ -46,9 +46,9 @@ class SybaseConnect
                 using (OdbcCommand command = new OdbcCommand(query, connection))
                 {
                     command.CommandTimeout = 120;
-                    using (OdbcDataAdapter adapter = new OdbcDataAdapter(command))
+                    using (OdbcDataReader reader = command.ExecuteReader())
                     {
-                        adapter.Fill(dt);
+                        dt.Load(reader); // Use Load() to fill the DataTable
                     }
                 }
             }
@@ -57,28 +57,5 @@ class SybaseConnect
 
             return dt;
         });
-    }
-    public DataTable ConnectDB(string query)
-    {
-        string _connectionString = "Driver={SYBASE ASE ODBC Driver};Srvr=sybdev2;Uid=bautistaje;Pwd=Happy@128;Db=dsdb;";
-
-        DataTable dt = new DataTable();
-
-        using (OdbcConnection connection = new OdbcConnection(_connectionString))
-        {
-            connection.Open();
-            using (OdbcCommand command = new OdbcCommand(query, connection))
-            {
-                command.CommandTimeout = 200;
-                using (OdbcDataAdapter adapter = new OdbcDataAdapter(command))
-                {
-                    int rowsAdded = adapter.Fill(dt);
-                    connection.Close();
-                }
-            }
-        }
-        MessageBox.Show("Sybase query executed!");
-
-        return dt;
     }
 }

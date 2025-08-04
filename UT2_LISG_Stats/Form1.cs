@@ -46,7 +46,7 @@ public partial class Form1 : Form
         formsPlot1.MouseMove += FormsPlot1_MouseMove;
         formsPlot1.MouseDown += FormsPlot1_MouseDown;
         formsPlot1.MouseUp += FormsPlot1_MouseUp;
-        
+
         // add a rectangle we can use as a selection indicator
         RectanglePlot = formsPlot1.Plot.Add.Rectangle(0, 0, 0, 0);
         RectanglePlot.FillStyle.Color = Colors.Red.WithAlpha(.2);
@@ -72,7 +72,6 @@ public partial class Form1 : Form
         //string pwd = Environment.GetEnvironmentVariable("TOWER_MYSQL_PASSWORD")!;
         string pwd = "ignition";
 
-        string tower = tbMovingAverage.Text;
         movingAverageWindowSize = int.Parse(tbMovingAverage.Text);
         slopeWindowSize = int.Parse(tbSlope.Text);
         loessWindowSize = Convert.ToDouble(tbLoess.Text);
@@ -90,116 +89,145 @@ public partial class Form1 : Form
 
         DateTime date;
         DateTime.TryParseExact(poisonDateTime1.Text, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out date);
-        string new_date = date.ToString("yyyy-MM-dd HH:mm:ss");
+        string startDate = date.ToString("yyyy-MM-dd HH:mm:ss");
+        string startDate2 = date.ToString("yyyy-MM-dd HH:mm:ss");
 
         DateTime date2;
         DateTime.TryParseExact(poisonDateTime2.Text, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out date2);
-        string new_date2 = date2.ToString("yyyy-MM-dd HH:mm:ss");
+        string endDate = date2.ToString("yyyy-MM-dd HH:mm:ss");
+        string endDate2 = date2.ToString("yyyy-MM-dd HH:mm:ss");
 
         // Pull Feed Position and plot this to see when Feed 2 Torque Limit reached
-        string query = $"select * from cersacladdata1 where t_stamp >= \"" + new_date + "\" AND t_stamp <= \"" + new_date2 + "\" AND Diam_Peak_Peak IS NOT NULL AND Cersa_Diam IS NOT NULL  AND Cersa_Xpos_mm IS NOT NULL AND Cersa_Ypos_mm IS NOT NULL order by t_stamp asc";
-        string queryChillers = $"select ((LR_Fraction/100)*3) AS LR, ((BF_Fraction/100)*3) AS BF, t_stamp from chiller_position1 where t_stamp >= \"" + new_date + "\" AND t_stamp <= \"" + new_date2 + "\" AND LR_Fraction IS NOT NULL AND BF_Fraction IS NOT NULL order by t_stamp desc";
-        string queryTension = $"select center/100 AS center, power/100 AS power, t_stamp from centvibpowdata1 where t_stamp >= \"" + new_date + "\" AND t_stamp <= \"" + new_date2 + "\" AND center IS NOT NULL AND power IS NOT NULL order by t_stamp desc";
-        string queryLS = $"select LineSpeed, t_stamp from cladhist1 where t_stamp >= \"" + new_date + "\" AND t_stamp <= \"" + new_date2 + "\" AND LineSpeed IS NOT NULL AND t_stamp IS NOT NULL order by t_stamp desc";
-        string queryCladDev = $"select CladDev, t_stamp from cladstatshist1 where t_stamp >= \"" + new_date + "\" AND t_stamp <= \"" + new_date2 + "\" AND CladDev IS NOT NULL AND t_stamp IS NOT NULL order by t_stamp desc";
-        string queryCladUT4 = $"select LineSpeed, Clad, t_stamp from cladhist1 where t_stamp >= \"" + new_date + "\" AND t_stamp <= \"" + new_date2 + "\" AND LineSpeed IS NOT NULL AND t_stamp IS NOT NULL AND Clad IS NOT NULL order by t_stamp desc";
-
-        string syb_QueryClad = $@"SELECT event_ts, mach_no, datum1, datum2, datum3, datum4, datum5 
-                                    FROM dsdb..draw_event NOHOLDLOCK 
-                                    WHERE  mach_no = '{tower}' AND
-                                    event_num = 30 AND 
-                                    event_ts >= '{new_date}' AND
-                                    event_ts <= '{new_date2}'
-                                    order by event_ts asc";
-        string syb_QueryBore = $@"SELECT event_ts, mach_no, datum1, datum2, datum3, datum4, datum5, event_num
-                                    FROM dsdb..draw_event NOHOLDLOCK 
-                                    WHERE  mach_no = '{tower}' AND
-                                    event_num in (116, 119) AND 
-                                    event_ts >= '{new_date}' AND
-                                    event_ts <= '{new_date2}'
-                                    order by event_ts asc";
-        string syb_AFC = $@"SELECT event_ts, datum3
-                                    FROM dsdb..draw_event NOHOLDLOCK 
-                                    WHERE  mach_no = '{tower}' AND
-                                    event_num in (130) AND 
-                                    event_ts >= '{new_date}'AND
-                                    event_ts <= '{new_date2}'
-                                    order by event_ts asc";
-        string syb_QueryCladAirlineExcursion =
-                                $@"SELECT event_ts, event_num, mach_no, datum1, datum3 
-                                    FROM dsdb..draw_event NOHOLDLOCK 
-                                    WHERE  mach_no = '{tower}' AND
-                                    event_num in (32,39) AND 
-                                    event_ts >= '{new_date}' AND
-                                    event_ts <= '{new_date2}'
-                                    order by event_ts asc";
+        string query = $"select * from cersacladdata1 where t_stamp >= \"" + startDate + "\" AND t_stamp <= \"" + endDate + "\" AND Diam_Peak_Peak IS NOT NULL AND Cersa_Diam IS NOT NULL  AND Cersa_Xpos_mm IS NOT NULL AND Cersa_Ypos_mm IS NOT NULL order by t_stamp asc";
+        string queryChillers = $"select ((LR_Fraction/100)*3) AS LR, ((BF_Fraction/100)*3) AS BF, t_stamp from chiller_position1 where t_stamp >= \"" + startDate + "\" AND t_stamp <= \"" + endDate + "\" AND LR_Fraction IS NOT NULL AND BF_Fraction IS NOT NULL order by t_stamp desc";
+        string queryTension = $"select center/100 AS center, power/100 AS power, t_stamp from centvibpowdata1 where t_stamp >= \"" + startDate + "\" AND t_stamp <= \"" + endDate + "\" AND center IS NOT NULL AND power IS NOT NULL order by t_stamp desc";
+        string queryLS = $"select LineSpeed, t_stamp from cladhist1 where t_stamp >= \"" + startDate + "\" AND t_stamp <= \"" + endDate + "\" AND LineSpeed IS NOT NULL AND t_stamp IS NOT NULL order by t_stamp desc";
+        string queryCladDev = $"select CladDev, t_stamp from cladstatshist1 where t_stamp >= \"" + startDate + "\" AND t_stamp <= \"" + endDate + "\" AND CladDev IS NOT NULL AND t_stamp IS NOT NULL order by t_stamp desc";
+        string queryCladUT4 = $"select LineSpeed, Clad, t_stamp from cladhist1 where t_stamp >= \"" + startDate + "\" AND t_stamp <= \"" + endDate + "\" AND LineSpeed IS NOT NULL AND t_stamp IS NOT NULL AND Clad IS NOT NULL order by t_stamp desc";
+        string queryClad394 = $"""
+                            SELECT (Diam/1000) AS Clad, (Peak2Peak/1000) AS Diam_Peak_Peak, (FibPos/1000) AS Position, t_stamp
+                            FROM cersa_details1lisg
+                            WHERE t_stamp >= '{startDate}' AND t_stamp <= '{endDate}'
+                            AND Diam IS NOT NULL
+                            AND t_stamp IS NOT NULL
+                            AND Peak2Peak IS NOT NULL
+                            AND FibPos IS NOT NULL
+                            ORDER BY t_stamp asc
+                            """;
 
         MySqlConnectionManager connection = new MySqlConnectionManager(towerInt, db, uid!, pwd!);
         DataTable dt = new DataTable();
-        DataTable dt_chiller = new DataTable();
-        DataTable dt_tension = new DataTable();
-        DataTable dt_LS = new DataTable();
-        DataTable dt_CladDev = new DataTable();
+        DataTable dtClad = new DataTable();
+        DataTable dtCladExcursion = new DataTable();
+        DataTable dtAirlines = new DataTable();
+        DataTable dtPressures = new DataTable();
+
+        string cladDevQuery = Queries.SybaseCladDeviation(towerInt.ToString(), startDate, endDate);
+        string cladExcursionQuery = Queries.SybaseCladExcursion(towerInt.ToString(), startDate, endDate);
+        string airlinesQuery = Queries.SybaseAirlines(towerInt.ToString(), startDate, endDate);
+        string pressuresQuery = Queries.SybaseFurnacePressures(towerInt.ToString(), startDate, endDate);
 
         try
         {
+            SybaseConnect sybConnect = new SybaseConnect();
+            dtClad = sybConnect.ConnectDB(cladDevQuery);
+            dtCladExcursion = sybConnect.ConnectDB(cladExcursionQuery);
+            dtAirlines = sybConnect.ConnectDB(airlinesQuery);
+            dtPressures = sybConnect.ConnectDB(pressuresQuery);
+
             if (towerInt >= 385)
             {
-                dt = connection.ExecuteQuery(queryCladUT4);
+                dt = connection.ExecuteQuery(queryClad394);
             }
             else
             {
                 Console.WriteLine();
                 dt = connection.ExecuteQuery(query);
             }
-            // dt_chiller = connection.ExecuteQuery(queryChillers);
-            // dt_tension = connection.ExecuteQuery(queryTension);
-            // dt_LS = connection.ExecuteQuery(queryLS);
-            // dt_CladDev = connection.ExecuteQuery(queryCladDev);
         }
         catch (Exception)
         {
             throw;
-            //label1.Text = $"Error:\n {ex.Message}";
-            //label1.ForeColor = Color.Red;
-            //label1.Visible = true;
         }
 
-        // SybaseConnect sybConnect = new SybaseConnect();
-        // DataTable dtClad = sybConnect.ConnectDBNew(syb_QueryClad);
-        // DataTable dtBore = sybConnect.ConnectDBNew(syb_QueryBore);
-        // DataTable dtAFC = sybConnect.ConnectDBNew(syb_AFC);
-        // DataTable dtCladAirline = sybConnect.ConnectDBNew(syb_QueryCladAirlineExcursion);
-        // DataTable dtClad_avg;
-
         DateTime[] xValues = dt.AsEnumerable().Select(x => x.Field<DateTime>("t_stamp")).ToArray();
-        double[] cladVals = dt.AsEnumerable().Select(x => (double)x.Field<float>(clad)).ToArray();
-        double[] p2pVals = dt.AsEnumerable().Select(x => (double)x.Field<float>("Diam_Peak_Peak")).ToArray();
-        double[] lr= dt.AsEnumerable().Select(x => (double)x.Field<float>("Cersa_Xpos_mm")).ToArray();
-        double[] fb= dt.AsEnumerable().Select(x => (double)x.Field<float>("Cersa_Ypos_mm")).ToArray();
+        DateTime[] cladDevTime = dtClad.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
+        DateTime[] cladExcursionTime = dtCladExcursion.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
+        DateTime[] airlinesTime = dtAirlines.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
+        DateTime[] pressuresTime = dtPressures.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
 
-        CreateScottSignalXY(xValues, lr, formsPlot2, "LR+", seriesDict);
-        CreateScottSignalXY(xValues, fb, formsPlot2, "FB+", seriesDict);
-        CreateScottSignalXYSecondary(xValues, cladVals, formsPlot1, "CladDiam", seriesDict);
-        CreateScottSignalXY(xValues, p2pVals, formsPlot1, "P2P", seriesDict);
+
+        double[] cladDev = dtClad.AsEnumerable().Select(x => x.Field<double>("clad_dev")).ToArray();
+        double[] lengthOdometer = dtClad.AsEnumerable().Select(x => (double)x.Field<int>("length_odom")/1000).ToArray();
+        double[] cladExcursion = dtCladExcursion.AsEnumerable().Select(x => x.Field<double>("datum1")).ToArray();
+        double[] bore = dtPressures.AsEnumerable().Select(x => x.Field<double>("BorePressure")).ToArray();
+        double[] body = dtPressures.AsEnumerable().Select(x => x.Field<double>("BodyPressure")).ToArray();
+        double[] temp = dtPressures.AsEnumerable().Select(x => x.Field<double>("Temperature")).ToArray();
+        double[] airlines = Generate.Repeating(airlinesTime.Count(), 0.0);
+
+
+        formsPlot1.Plot.Add.HorizontalLine(0.6, 2, Colors.Red, LinePattern.Dashed);
+        formsPlot1.Plot.Add.HorizontalLine(0.15, 2, Colors.Black, LinePattern.Dashed);
+
+        if (towerInt < 385)
+        {
+            double[] lr = dt.AsEnumerable().Select(x => (double)x.Field<float>("Cersa_Xpos_mm")).ToArray();
+            double[] fb = dt.AsEnumerable().Select(x => (double)x.Field<float>("Cersa_Ypos_mm")).ToArray();
+            double[] p2pVals = dt.AsEnumerable().Select(x => (double)x.Field<float>("Diam_Peak_Peak")).ToArray();
+            double[] cladVals = dt.AsEnumerable().Select(x => (double)x.Field<float>(clad)).ToArray();
+
+            CreateScottSignalXYSecondary(xValues, cladVals, formsPlot1, "CladDiam", seriesDict);
+            CreateScottSignalXY(xValues, p2pVals, formsPlot1, "P2P", seriesDict);
+            CreateScottSignalXY(xValues, lr, formsPlot2, "LR+", seriesDict);
+            CreateScottSignalXY(xValues, fb, formsPlot2, "FB+", seriesDict);
+            DataPoints = ConvertToCoordinates(xValues, p2pVals);
+        }
+        else
+        {
+            double[] p2pVals = dt.AsEnumerable().Select(x => (double)x.Field<Decimal>("Diam_Peak_Peak")).ToArray();
+            double[] cladVals = dt.AsEnumerable().Select(x => (double)x.Field<Decimal>(clad)).ToArray();
+            double[] pos = dt.AsEnumerable().Select(x => (double)x.Field<Decimal>("Position")).ToArray();
+            CreateScottSignalXYSecondary(xValues, cladVals, formsPlot1, "CladDiam", seriesDict);
+            CreateScottSignalXY(xValues, p2pVals, formsPlot1, "P2P", seriesDict);
+            CreateScottSignalXY(xValues, pos, formsPlot2, "Position", seriesDict);
+            DataPoints = ConvertToCoordinates(xValues, p2pVals);
+        }
+
+        CreateScottSignalXY(cladDevTime, cladDev, formsPlot1, "CladDev", System.Drawing.Color.Lime);
+        CreateScottScatterNoLineSecondary(cladExcursionTime, cladExcursion, formsPlot1, "CladExcursion", seriesDict, System.Drawing.Color.Red);
+        CreateScottScatterNoLine(airlinesTime, airlines, formsPlot1, "Airlines", seriesDict);
+        CreateScottSignalXY(pressuresTime, bore, formsPlot3, "Bore(Pa)", System.Drawing.Color.MediumPurple);
+        CreateScottSignalXY(pressuresTime, body, formsPlot3, "Body(Pa)", System.Drawing.Color.LightGray);
+        CreateScottSignalXYSecondary(pressuresTime, temp, formsPlot3, "Temp", System.Drawing.Color.Crimson);
+
+        CreateScottSignalXYSecondary(cladDevTime, lengthOdometer, formsPlot2, "Odometer", System.Drawing.Color.MediumSlateBlue);
+
 
         var plot1X = formsPlot1.Plot.Axes.Bottom;
         var plot2X = formsPlot2.Plot.Axes.Bottom;
+        var plot3X = formsPlot3.Plot.Axes.Bottom;
 
         formsPlot1.Plot.Axes.Link(plot1X, plot2X, formsPlot2.Plot);
+        formsPlot1.Plot.Axes.Link(plot1X, plot3X, formsPlot3.Plot);
         formsPlot2.Plot.Axes.Link(plot2X, plot1X, formsPlot1.Plot);
+        formsPlot2.Plot.Axes.Link(plot2X, plot3X, formsPlot3.Plot);
+        formsPlot3.Plot.Axes.Link(plot3X, plot1X, formsPlot1.Plot);
+        formsPlot3.Plot.Axes.Link(plot3X, plot2X, formsPlot2.Plot);
 
-        DataPoints = ConvertToCoordinates(xValues, p2pVals);
 
-        Console.WriteLine();
+        formsPlot1.Refresh();
+        formsPlot2.Refresh();
+        formsPlot3.Refresh();
     }
 
     public void ClearCharts()
     {
         formsPlot1.Reset();
         formsPlot2.Reset();
+        formsPlot3.Reset();
         formsPlot1.Refresh();
         formsPlot2.Refresh();
+        formsPlot3.Refresh();
     }
     public static IEnumerable<T> Unique<T>(DataTable table, string columnName)
     {
@@ -304,6 +332,15 @@ public partial class Form1 : Form
         formsPlot.Plot.Axes.DateTimeTicksBottom();
         formsPlot.Refresh();
     }
+    public static void CreateScottSignalXYSecondary(DateTime[] xs, double[] ydata, FormsPlot formsPlot, string legendName, System.Drawing.Color color)
+    {
+        var scatter = formsPlot.Plot.Add.SignalXY(xs, ydata);
+        scatter.Axes.YAxis = formsPlot.Plot.Axes.Right;
+        scatter.LegendText = legendName;
+        scatter.LineColor = Color.FromColor(color);
+        formsPlot.Plot.Axes.DateTimeTicksBottom();
+        formsPlot.Refresh();
+    }
     public static void CreateScottScatterNoLine(DateTime[] xs, double[] ydata, FormsPlot formsPlot, string legendName)
     {
         var scatter = formsPlot.Plot.Add.Scatter(xs, ydata);
@@ -317,6 +354,27 @@ public partial class Form1 : Form
         var scatter = formsPlot.Plot.Add.Scatter(xs, ydata);
         scatter.LineWidth = 0;
         scatter.LegendText = legendName;
+        formsPlot.Plot.Axes.DateTimeTicksBottom();
+        dictionary[legendName] = scatter;
+        formsPlot.Refresh();
+    }
+    public static void CreateScottScatterNoLineSecondary(DateTime[] xs, double[] ydata, FormsPlot formsPlot, string legendName, Dictionary<string, IPlottable> dictionary)
+    {
+        var scatter = formsPlot.Plot.Add.Scatter(xs, ydata);
+        scatter.LineWidth = 0;
+        scatter.LegendText = legendName;
+        scatter.Axes.YAxis = formsPlot.Plot.Axes.Right;
+        formsPlot.Plot.Axes.DateTimeTicksBottom();
+        dictionary[legendName] = scatter;
+        formsPlot.Refresh();
+    }
+    public static void CreateScottScatterNoLineSecondary(DateTime[] xs, double[] ydata, FormsPlot formsPlot, string legendName, Dictionary<string, IPlottable> dictionary, System.Drawing.Color color)
+    {
+        var scatter = formsPlot.Plot.Add.Scatter(xs, ydata);
+        scatter.LineWidth = 0;
+        scatter.LegendText = legendName;
+        scatter.Color = Color.FromColor(color);
+        scatter.Axes.YAxis = formsPlot.Plot.Axes.Right;
         formsPlot.Plot.Axes.DateTimeTicksBottom();
         dictionary[legendName] = scatter;
         formsPlot.Refresh();
@@ -502,11 +560,13 @@ public partial class Form1 : Form
         if (counter > 0)
         {
             formsPlot1.Plot.Remove(seriesDict["Moving Average"]);
-            formsPlot1.Plot.Remove(seriesDict["Slope"]);
+            formsPlot1.Plot.Remove(seriesDict["Slope M.Avg"]);
             formsPlot1.Plot.Remove(seriesDict["Loess Fit"]);
+            formsPlot1.Plot.Remove(seriesDict["Slope Loess"]);
             seriesDict.Remove("Moving Average");
-            seriesDict.Remove("Slope");
+            seriesDict.Remove("Slope M.Avg");
             seriesDict.Remove("Loess Fit");
+            seriesDict.Remove("Slope Loess");
         }
 
         // identify selectedPoints
@@ -526,22 +586,22 @@ public partial class Form1 : Form
                 newMarker.MarkerStyle.LineWidth = 1;
             }
         }
-        
+
         TankStateAnalyzer.CalculateMovingAverage(myTable, new List<string> { "Y" }, movingAverageWindowSize);
         TankStateAnalyzer.CalculateSlope(myTable, new List<string> { "Y_MovingAvg" }, slopeWindowSize, "X");
 
-        DateTime[] xCladValues = myTable.AsEnumerable().Select(x => DateTime.FromOADate(x.Field<double>("X"))).ToArray();
-        double[] yCladValues = myTable.AsEnumerable().Select(x => (double)x.Field<float>("Y_MovingAvg")).ToArray();
-
-        DateTime[] xSlopeValues = myTable.AsEnumerable().Select(x => DateTime.FromOADate(x.Field<double>("X"))).ToArray();
+        DateTime[] xValues = myTable.AsEnumerable().Select(x => DateTime.FromOADate(x.Field<double>("X"))).ToArray();
+        double[] yMovingAverage = myTable.AsEnumerable().Select(x => (double)x.Field<float>("Y_MovingAvg")).ToArray();
         double[] ySlopeValues = myTable.AsEnumerable().Select(x => (double)x.Field<float>("Y_Slope")).ToArray();
 
-        double[] loessXValues = xCladValues.AsEnumerable().Select(x => x.ToOADate()).ToArray();
-        double[] loessYValues = Loess.OptimizedLoess(loessXValues, yCladValues, loessWindowSize);
+        double[] loessXValues = xValues.AsEnumerable().Select(x => x.ToOADate()).ToArray();
+        double[] loessYValues = Loess.OptimizedLoess(loessXValues, yMovingAverage, loessWindowSize);
+        double[] loessSlope = TankStateAnalyzer.CalculateSlope(loessYValues, xValues, slopeWindowSize);
 
-        CreateScottSignalXY(xCladValues, loessYValues, formsPlot1, "Loess Fit", System.Drawing.Color.LightSeaGreen, seriesDict);
-        CreateScottSignalXY(xCladValues, yCladValues, formsPlot1, "Moving Average", System.Drawing.Color.BlueViolet, seriesDict);
-        CreateScottSignalXY(xSlopeValues, ySlopeValues, formsPlot1, "Slope", System.Drawing.Color.LightPink, seriesDict);
+        CreateScottSignalXY(xValues, loessYValues, formsPlot1, "Loess Fit", System.Drawing.Color.LightSeaGreen, seriesDict);
+        CreateScottSignalXY(xValues, yMovingAverage, formsPlot1, "Moving Average", System.Drawing.Color.BlueViolet, seriesDict);
+        CreateScottSignalXY(xValues, ySlopeValues, formsPlot1, "Slope M.Avg", System.Drawing.Color.Magenta, seriesDict);
+        CreateScottSignalXY(xValues, loessSlope, formsPlot1, "Slope Loess", System.Drawing.Color.PowderBlue, seriesDict);
 
         myTable.Reset();
 
@@ -590,5 +650,14 @@ public partial class Form1 : Form
         }
 
         return table;
+    }
+
+    private void formsPlot1_ClientSizeChanged(object sender, EventArgs e)
+    {
+        formsPlot2.Width = formsPlot1.Width - 13;
+        formsPlot2.Height = formsPlot1.Height / 2;
+
+        formsPlot3.Width = formsPlot1.Width - 13;
+        formsPlot3.Height = formsPlot1.Height / 2;
     }
 }

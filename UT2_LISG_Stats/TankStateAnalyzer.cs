@@ -170,6 +170,52 @@ namespace UT2_LISG_Stats
 
             return table;
         }
+        public static double[] CalculateSlope(double[] values, DateTime[] timestamps, int windowMinutes)
+        {
+            if (values == null || timestamps == null)
+                throw new ArgumentNullException("Input arrays cannot be null.");
+            if (values.Length != timestamps.Length)
+                throw new ArgumentException("Values and timestamps must be the same length.");
+            if (windowMinutes <= 0)
+                throw new ArgumentException("Window size must be greater than zero.", nameof(windowMinutes));
+
+            int n = values.Length;
+            double[] slopes = new double[n];
+
+            Queue<double> windowValues = new Queue<double>();
+            Queue<DateTime> windowTimes = new Queue<DateTime>();
+
+            for (int i = 0; i < n; i++)
+            {
+                double currentValue = values[i];
+                DateTime currentTime = timestamps[i];
+
+                windowValues.Enqueue(currentValue);
+                windowTimes.Enqueue(currentTime);
+
+                // Remove points outside the time window
+                while (windowTimes.Count > 0 && (currentTime - windowTimes.Peek()).TotalMinutes >= windowMinutes)
+                {
+                    windowValues.Dequeue();
+                    windowTimes.Dequeue();
+                }
+
+                // Calculate slope (rate of change)
+                if (windowValues.Count >= 2)
+                {
+                    double rise = currentValue - windowValues.Peek();
+                    double runMinutes = (currentTime - windowTimes.Peek()).TotalMinutes;
+
+                    slopes[i] = runMinutes != 0 ? (rise / runMinutes) * windowMinutes : 0.0;
+                }
+                else
+                {
+                    slopes[i] = 0.0; // Not enough data to calculate a slope
+                }
+            }
+
+            return slopes;
+        }
 
         public static List<double> CalculateSlopeToList(DataTable table, List<string> columnName, int windowSize)
         {
