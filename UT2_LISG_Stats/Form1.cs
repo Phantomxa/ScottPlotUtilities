@@ -121,11 +121,13 @@ public partial class Form1 : Form
         DataTable dtCladExcursion = new DataTable();
         DataTable dtAirlines = new DataTable();
         DataTable dtPressures = new DataTable();
+        DataTable dtFurnaceFlows = new DataTable();
 
         string cladDevQuery = Queries.SybaseCladDeviation(towerInt.ToString(), startDate, endDate);
         string cladExcursionQuery = Queries.SybaseCladExcursion(towerInt.ToString(), startDate, endDate);
         string airlinesQuery = Queries.SybaseAirlines(towerInt.ToString(), startDate, endDate);
         string pressuresQuery = Queries.SybaseFurnacePressures(towerInt.ToString(), startDate, endDate);
+        string furnaceFlowsQuery = Queries.SybaseFurnaceFlows(towerInt.ToString(), startDate, endDate);
 
         try
         {
@@ -134,6 +136,7 @@ public partial class Form1 : Form
             dtCladExcursion = sybConnect.ConnectDB(cladExcursionQuery);
             dtAirlines = sybConnect.ConnectDB(airlinesQuery);
             dtPressures = sybConnect.ConnectDB(pressuresQuery);
+            dtFurnaceFlows = sybConnect.ConnectDB(furnaceFlowsQuery);
 
             if (towerInt >= 385)
             {
@@ -155,6 +158,7 @@ public partial class Form1 : Form
         DateTime[] cladExcursionTime = dtCladExcursion.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
         DateTime[] airlinesTime = dtAirlines.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
         DateTime[] pressuresTime = dtPressures.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
+        DateTime[] furnaceFlowsTime = dtFurnaceFlows.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
 
 
         double[] cladDev = dtClad.AsEnumerable().Select(x => x.Field<double>("clad_dev")).ToArray();
@@ -165,6 +169,8 @@ public partial class Form1 : Form
         double[] temp = dtPressures.AsEnumerable().Select(x => x.Field<double>("Temperature")).ToArray();
         double[] airlines = Generate.Repeating(airlinesTime.Count(), 0.0);
 
+        double[] boreFlow = dtFurnaceFlows.AsEnumerable().Select(x => x.Field<double>("Ar_Bore")).ToArray();
+        double[] sealFlow = dtFurnaceFlows.AsEnumerable().Select(x => x.Field<double>("Ar_Seal")).ToArray();
 
         formsPlot1.Plot.Add.HorizontalLine(0.6, 2, Colors.Red, LinePattern.Dashed);
         formsPlot1.Plot.Add.HorizontalLine(0.15, 2, Colors.Black, LinePattern.Dashed);
@@ -196,12 +202,14 @@ public partial class Form1 : Form
         CreateScottSignalXY(cladDevTime, cladDev, formsPlot1, "CladDev", System.Drawing.Color.Lime);
         CreateScottScatterNoLineSecondary(cladExcursionTime, cladExcursion, formsPlot1, "CladExcursion", seriesDict, System.Drawing.Color.Red);
         CreateScottScatterNoLine(airlinesTime, airlines, formsPlot1, "Airlines", seriesDict);
-        CreateScottSignalXY(pressuresTime, bore, formsPlot3, "Bore(Pa)", System.Drawing.Color.MediumPurple);
         CreateScottSignalXY(pressuresTime, body, formsPlot3, "Body(Pa)", System.Drawing.Color.LightGray);
         CreateScottSignalXYSecondary(pressuresTime, temp, formsPlot3, "Temp", System.Drawing.Color.Crimson);
+        CreateScottSignalXY(pressuresTime, bore, formsPlot3, "Bore(Pa)", System.Drawing.Color.MediumPurple);
+
+        CreateScottSignalXY(furnaceFlowsTime, boreFlow, formsPlot3, "BoreFlow", System.Drawing.Color.Green);
+        CreateScottSignalXY(furnaceFlowsTime, sealFlow, formsPlot3, "SealFlow", System.Drawing.Color.Yellow);
 
         CreateScottSignalXYSecondary(cladDevTime, lengthOdometer, formsPlot2, "Odometer", System.Drawing.Color.MediumSlateBlue);
-
 
         var plot1X = formsPlot1.Plot.Axes.Bottom;
         var plot2X = formsPlot2.Plot.Axes.Bottom;
@@ -214,6 +222,9 @@ public partial class Form1 : Form
         formsPlot3.Plot.Axes.Link(plot3X, plot1X, formsPlot1.Plot);
         formsPlot3.Plot.Axes.Link(plot3X, plot2X, formsPlot2.Plot);
 
+        formsPlot1.Plot.Legend.FontSize = 8;
+        formsPlot2.Plot.Legend.FontSize = 8;
+        formsPlot3.Plot.Legend.FontSize = 8;
 
         formsPlot1.Refresh();
         formsPlot2.Refresh();

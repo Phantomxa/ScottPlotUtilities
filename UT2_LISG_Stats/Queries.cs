@@ -64,6 +64,20 @@ namespace UT2_LISG_Stats
                                     """;
             return syb_Query_NIF_Pressures;
         }
+        public static string SybaseFurnaceFlows(string tower, string startDate, string endDate)
+        {
+            string syb_Query_NIF_Ar = $"""
+                                    SELECT event_ts, preform_no, CONVERT(INT, mach_no) AS mach_no, CONVERT(FLOAT, datum1) AS BorePressure, CONVERT(FLOAT, datum2) AS Ar_Bore, CONVERT(FLOAT, datum3) AS Ar_Seal, CONVERT(INT, length_odom) AS length_odom, CONVERT(FLOAT, datum5) as LineSpeed
+                                    FROM dsdb..draw_event NOHOLDLOCK
+                                    WHERE
+                                    event_num = 119
+                                    AND event_ts >= '{startDate}'
+                                    AND event_ts <= '{endDate}'
+                                    AND mach_no = '{tower}'
+                                    order by event_ts asc
+                                    """;
+            return syb_Query_NIF_Ar;
+        }
         public static void MyMethod(string preform, string tower, string startDate, string endDate)
         {
             string syb_QueryClad = $@"SELECT event_ts, preform_no, CONVERT(INT, mach_no) AS mach_no, CONVERT(FLOAT, datum1) AS clad, CONVERT(FLOAT, datum4) AS clad_dev, CONVERT(INT, length_odom) AS length_odom
