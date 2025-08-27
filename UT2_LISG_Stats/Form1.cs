@@ -229,6 +229,43 @@ public partial class Form1 : Form
         formsPlot1.Refresh();
         formsPlot2.Refresh();
         formsPlot3.Refresh();
+
+        var pointsAnnotation = formsPlot1.Plot.Add.Annotation("", Alignment.UpperLeft);
+        var pointsAnnotation2 = formsPlot2.Plot.Add.Annotation("", Alignment.UpperLeft);
+        var pointsAnnotation3 = formsPlot3.Plot.Add.Annotation("", Alignment.UpperLeft);
+
+        HoverManager hoverManager = new HoverManager(formsPlot1);
+        hoverManager.PointHovered += (plottable, index, x, y) =>
+        {
+            pointsAnnotation.Text = $"X = {DateTime.FromOADate(x).ToString()}     Y={y:0.##}";
+        };
+
+        hoverManager.NoPointHovered += () =>
+        {
+            pointsAnnotation.Text = "No point hovered";
+        };
+
+        HoverManager hoverManager2 = new HoverManager(formsPlot2);
+        hoverManager2.PointHovered += (plottable, index, x, y) =>
+        {
+            pointsAnnotation2.Text = $"X = {DateTime.FromOADate(x).ToString()}     Y={y:0.##}";
+        };
+
+        hoverManager2.NoPointHovered += () =>
+        {
+            pointsAnnotation2.Text = "No point hovered";
+        };
+
+        HoverManager hoverManager3 = new HoverManager(formsPlot3);
+        hoverManager3.PointHovered += (plottable, index, x, y) =>
+        {
+            pointsAnnotation3.Text = $"X = {DateTime.FromOADate(x).ToString()}     Y = {y:0.##}";
+        };
+
+        hoverManager3.NoPointHovered += () =>
+        {
+            pointsAnnotation3.Text = "No point hovered";
+        };
     }
 
     public void ClearCharts()
@@ -553,7 +590,6 @@ public partial class Form1 : Form
         MouseDownCoordinates = formsPlot1.Plot.GetCoordinates(e.X, e.Y);
         formsPlot1.UserInputProcessor.Disable(); // disable the default click-drag-pan behavior
     }
-
     private void FormsPlot1_MouseUp(object? sender, MouseEventArgs e)
     {
         if (!cbSelectPoints.Checked)
@@ -625,7 +661,6 @@ public partial class Form1 : Form
         formsPlot1.UserInputProcessor.Enable(); // re-enable the default click-drag-pan behavior
         counter++;
     }
-
     private void FormsPlot1_MouseMove(object? sender, MouseEventArgs e)
     {
         if (!MouseIsDown || !cbSelectPoints.Checked)
@@ -662,7 +697,6 @@ public partial class Form1 : Form
 
         return table;
     }
-
     private void formsPlot1_ClientSizeChanged(object sender, EventArgs e)
     {
         formsPlot2.Width = formsPlot1.Width - 13;

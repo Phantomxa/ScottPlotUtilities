@@ -116,7 +116,6 @@ namespace UT2_LISG_Stats
             MessageBox.Show($"window size: {windowSize}");
             return output;
         }
-
         private static double Tricubic(double x)
         {
             if (x >= 1.0) return 0.0;
