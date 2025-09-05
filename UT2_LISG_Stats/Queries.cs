@@ -7,7 +7,7 @@ namespace UT2_LISG_Stats
         public static string SybaseCladDeviation(string tower, string startDate, string endDate)
         {
             string syb_QueryClad = $"""
-                                    SELECT event_ts, preform_no, CONVERT(INT, mach_no) AS mach_no, CONVERT(FLOAT, datum1) AS clad, CONVERT(FLOAT, datum4) AS clad_dev, CONVERT(INT, length_odom) AS length_odom
+                                    SELECT event_ts, preform_no, CONVERT(INT, mach_no) AS mach_no, CONVERT(FLOAT, datum1) AS clad, CONVERT(FLOAT, datum4) AS clad_dev, CONVERT(INT, length_odom) AS length_odom, CONVERT(INT, feed_pos) AS feed_pos
                                     FROM dsdb..draw_event NOHOLDLOCK 
                                     WHERE  event_ts >= '{startDate}'
                                     AND event_ts <= '{endDate}'

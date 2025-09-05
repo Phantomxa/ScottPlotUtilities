@@ -162,7 +162,8 @@ public partial class Form1 : Form
 
 
         double[] cladDev = dtClad.AsEnumerable().Select(x => x.Field<double>("clad_dev")).ToArray();
-        double[] lengthOdometer = dtClad.AsEnumerable().Select(x => (double)x.Field<int>("length_odom")/1000).ToArray();
+        double[] lengthOdometer = dtClad.AsEnumerable().Select(x => (double)x.Field<int>("length_odom")/1_000_000).ToArray();
+        double[] feedPosition = dtClad.AsEnumerable().Select(x => (double)x.Field<int>("feed_pos")).ToArray();
         double[] cladExcursion = dtCladExcursion.AsEnumerable().Select(x => x.Field<double>("datum1")).ToArray();
         double[] bore = dtPressures.AsEnumerable().Select(x => x.Field<double>("BorePressure")).ToArray();
         double[] body = dtPressures.AsEnumerable().Select(x => x.Field<double>("BodyPressure")).ToArray();
@@ -209,7 +210,9 @@ public partial class Form1 : Form
         CreateScottSignalXY(furnaceFlowsTime, boreFlow, formsPlot3, "BoreFlow", System.Drawing.Color.Green);
         CreateScottSignalXY(furnaceFlowsTime, sealFlow, formsPlot3, "SealFlow", System.Drawing.Color.Yellow);
 
-        CreateScottSignalXYSecondary(cladDevTime, lengthOdometer, formsPlot2, "Odometer", System.Drawing.Color.MediumSlateBlue);
+        CreateScottSignalXY(cladDevTime, lengthOdometer, formsPlot1, "len_odom (Mm)", System.Drawing.Color.MediumSlateBlue);
+        //CreateScottSignalXYSecondary(cladDevTime, lengthOdometer, formsPlot2, "Odometer", System.Drawing.Color.MediumSlateBlue);
+        CreateScottSignalXYSecondary(cladDevTime, feedPosition, formsPlot2, "feed_pos", System.Drawing.Color.MediumSlateBlue);
 
         var plot1X = formsPlot1.Plot.Axes.Bottom;
         var plot2X = formsPlot2.Plot.Axes.Bottom;
