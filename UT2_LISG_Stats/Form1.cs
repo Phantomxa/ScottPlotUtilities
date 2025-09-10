@@ -24,10 +24,7 @@ public partial class Form1 : Form
     CoordinateRect MouseSlectionRect => new(MouseDownCoordinates, MouseNowCoordinates);
     bool MouseIsDown = false;
     public ScottPlot.Plottables.Rectangle RectanglePlot;
-    public string Title => "Select Data Points";
-
-    public string Description => "Demonstrates how to use mouse events " +
-        "to draw a rectangle around data points to select them";
+    DateTime lastDate = new DateTime();
 
     public Form1()
     {
@@ -123,20 +120,18 @@ public partial class Form1 : Form
         DataTable dtPressures = new DataTable();
         DataTable dtFurnaceFlows = new DataTable();
 
-        string cladDevQuery = Queries.SybaseCladDeviation(towerInt.ToString(), startDate, endDate);
-        string cladExcursionQuery = Queries.SybaseCladExcursion(towerInt.ToString(), startDate, endDate);
-        string airlinesQuery = Queries.SybaseAirlines(towerInt.ToString(), startDate, endDate);
-        string pressuresQuery = Queries.SybaseFurnacePressures(towerInt.ToString(), startDate, endDate);
-        string furnaceFlowsQuery = Queries.SybaseFurnaceFlows(towerInt.ToString(), startDate, endDate);
+        string cladDevQuery, cladExcursionQuery, airlinesQuery, pressuresQuery, furnaceFlowsQuery;
+        ExecuteSybaseQueries(towerInt, startDate, endDate, out cladDevQuery, out cladExcursionQuery, out airlinesQuery, out pressuresQuery, out furnaceFlowsQuery);
 
         try
         {
-            SybaseConnect sybConnect = new SybaseConnect();
-            dtClad = sybConnect.ConnectDB(cladDevQuery);
-            dtCladExcursion = sybConnect.ConnectDB(cladExcursionQuery);
-            dtAirlines = sybConnect.ConnectDB(airlinesQuery);
-            dtPressures = sybConnect.ConnectDB(pressuresQuery);
-            dtFurnaceFlows = sybConnect.ConnectDB(furnaceFlowsQuery);
+            var syb = new MsSqlConnectionManager();
+
+            dtClad = syb.SqlConnect(cladDevQuery);
+            dtCladExcursion = syb.SqlConnect(cladExcursionQuery);
+            dtAirlines = syb.SqlConnect(airlinesQuery);
+            dtPressures = syb.SqlConnect(pressuresQuery);
+            dtFurnaceFlows = syb.SqlConnect(furnaceFlowsQuery);
 
             if (towerInt >= 385)
             {
@@ -162,7 +157,7 @@ public partial class Form1 : Form
 
 
         double[] cladDev = dtClad.AsEnumerable().Select(x => x.Field<double>("clad_dev")).ToArray();
-        double[] lengthOdometer = dtClad.AsEnumerable().Select(x => (double)x.Field<int>("length_odom")/1_000_000).ToArray();
+        double[] lengthOdometer = dtClad.AsEnumerable().Select(x => (double)x.Field<int>("length_odom") / 1_000_000).ToArray();
         double[] feedPosition = dtClad.AsEnumerable().Select(x => (double)x.Field<int>("feed_pos")).ToArray();
         double[] cladExcursion = dtCladExcursion.AsEnumerable().Select(x => x.Field<double>("datum1")).ToArray();
         double[] bore = dtPressures.AsEnumerable().Select(x => x.Field<double>("BorePressure")).ToArray();
@@ -269,6 +264,15 @@ public partial class Form1 : Form
         {
             pointsAnnotation3.Text = "No point hovered";
         };
+    }
+
+    private static void ExecuteSybaseQueries(int towerInt, string startDate, string endDate, out string cladDevQuery, out string cladExcursionQuery, out string airlinesQuery, out string pressuresQuery, out string furnaceFlowsQuery)
+    {
+        cladDevQuery = Queries.SybaseCladDeviation(towerInt.ToString(), startDate, endDate);
+        cladExcursionQuery = Queries.SybaseCladExcursion(towerInt.ToString(), startDate, endDate);
+        airlinesQuery = Queries.SybaseAirlines(towerInt.ToString(), startDate, endDate);
+        pressuresQuery = Queries.SybaseFurnacePressures(towerInt.ToString(), startDate, endDate);
+        furnaceFlowsQuery = Queries.SybaseFurnaceFlows(towerInt.ToString(), startDate, endDate);
     }
 
     public void ClearCharts()
