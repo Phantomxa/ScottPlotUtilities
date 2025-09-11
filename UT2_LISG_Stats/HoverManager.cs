@@ -1,6 +1,7 @@
 ﻿using ScottPlot;
 using ScottPlot.Plottables;
 using ScottPlot.WinForms;
+using System.Numerics;
 
 namespace UT2_LISG_Stats
 {
@@ -67,7 +68,7 @@ namespace UT2_LISG_Stats
 
                 // Convert mouse pixel → coordinates (no renderInfo needed in 5.0.55)
                 Coordinates mouseCoords = plottable.Axes.GetCoordinates(mousePixel);
-                Coordinates mouseCoords2 = formsPlot.Plot.GetCoordinates(mousePixel);
+
                 switch (plottable)
                 {
                     case Scatter scatter:
@@ -81,6 +82,25 @@ namespace UT2_LISG_Stats
                             ? sigXY.Data.GetNearest(mouseCoords, formsPlot.Plot.LastRender)
                             : sigXY.Data.GetNearestX(mouseCoords, formsPlot.Plot.LastRender);
                         break;
+                    case DataLogger logger:
+                        {
+                            double[] xs = logger.Data.Coordinates.Select(c => c.X).ToArray(); ;
+                            double[] ys = logger.Data.Coordinates.Select(c => c.Y).ToArray(); ;
+
+                            if (xs.Length == 0)
+                                continue;
+
+                            int nearestIndex = ClosestIndex(xs, mouseCoords.X);
+                            if (nearestIndex < 0 || nearestIndex >= ys.Length)
+                                continue;
+
+                            double nearestX = xs[nearestIndex];
+                            double nearestY = ys[nearestIndex];
+
+                            nearest = new(nearestX, nearestY, nearestIndex);
+
+                            break;
+                        }
 
                     default:
                         continue;
@@ -126,5 +146,31 @@ namespace UT2_LISG_Stats
                 NoPointHovered?.Invoke();
             }
         }
+
+        /// <summary>
+        /// Finds the index of the value in xs that is closest to target.
+        /// Returns -1 if xs is null or empty.
+        /// </summary>
+        private static int ClosestIndex(double[] xs, double target)
+        {
+            if (xs == null || xs.Length == 0)
+                return -1;
+
+            int bestIndex = 0;
+            double bestDist = Math.Abs(xs[0] - target);
+
+            for (int i = 1; i < xs.Length; i++)
+            {
+                double dist = Math.Abs(xs[i] - target);
+                if (dist < bestDist)
+                {
+                    bestDist = dist;
+                    bestIndex = i;
+                }
+            }
+
+            return bestIndex;
+        }
+
     }
 }

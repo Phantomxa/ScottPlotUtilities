@@ -46,6 +46,7 @@
             flowLayoutPanel2 = new FlowLayoutPanel();
             formsPlot2 = new ScottPlot.WinForms.FormsPlot();
             formsPlot3 = new ScottPlot.WinForms.FormsPlot();
+            cbDataUpdate = new CheckBox();
             tableLayoutPanel1.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
             flowLayoutPanel2.SuspendLayout();
@@ -76,6 +77,7 @@
             flowLayoutPanel1.Controls.Add(poisonDateTime2);
             flowLayoutPanel1.Controls.Add(btnExecute);
             flowLayoutPanel1.Controls.Add(cbSelectPoints);
+            flowLayoutPanel1.Controls.Add(cbDataUpdate);
             flowLayoutPanel1.Controls.Add(cbShowPoints);
             flowLayoutPanel1.Controls.Add(lbMovingAverage);
             flowLayoutPanel1.Controls.Add(tbMovingAverage);
@@ -165,7 +167,7 @@
             // cbShowPoints
             // 
             cbShowPoints.AutoSize = true;
-            cbShowPoints.Location = new Point(704, 3);
+            cbShowPoints.Location = new Point(757, 3);
             cbShowPoints.Name = "cbShowPoints";
             cbShowPoints.Size = new Size(91, 19);
             cbShowPoints.TabIndex = 6;
@@ -175,7 +177,7 @@
             // lbMovingAverage
             // 
             lbMovingAverage.AutoSize = true;
-            lbMovingAverage.Location = new Point(801, 0);
+            lbMovingAverage.Location = new Point(854, 0);
             lbMovingAverage.Name = "lbMovingAverage";
             lbMovingAverage.Size = new Size(61, 19);
             lbMovingAverage.TabIndex = 7;
@@ -199,7 +201,7 @@
     {
     "300"
     };
-            tbMovingAverage.Location = new Point(868, 3);
+            tbMovingAverage.Location = new Point(921, 3);
             tbMovingAverage.MaxLength = 32767;
             tbMovingAverage.Name = "tbMovingAverage";
             tbMovingAverage.PasswordChar = '\0';
@@ -218,7 +220,7 @@
             // lbSlope
             // 
             lbSlope.AutoSize = true;
-            lbSlope.Location = new Point(896, 0);
+            lbSlope.Location = new Point(949, 0);
             lbSlope.Name = "lbSlope";
             lbSlope.Size = new Size(42, 19);
             lbSlope.TabIndex = 8;
@@ -242,7 +244,7 @@
     {
     "10"
     };
-            tbSlope.Location = new Point(944, 3);
+            tbSlope.Location = new Point(997, 3);
             tbSlope.MaxLength = 32767;
             tbSlope.Name = "tbSlope";
             tbSlope.PasswordChar = '\0';
@@ -261,7 +263,7 @@
             // lbLoess
             // 
             lbLoess.AutoSize = true;
-            lbLoess.Location = new Point(972, 0);
+            lbLoess.Location = new Point(1025, 0);
             lbLoess.Name = "lbLoess";
             lbLoess.Size = new Size(40, 19);
             lbLoess.TabIndex = 9;
@@ -285,7 +287,7 @@
     {
     "0.05"
     };
-            tbLoess.Location = new Point(1018, 3);
+            tbLoess.Location = new Point(3, 38);
             tbLoess.MaxLength = 32767;
             tbLoess.Name = "tbLoess";
             tbLoess.PasswordChar = '\0';
@@ -338,6 +340,17 @@
             formsPlot3.Size = new Size(1045, 199);
             formsPlot3.TabIndex = 1;
             // 
+            // cbDataUpdate
+            // 
+            cbDataUpdate.AutoSize = true;
+            cbDataUpdate.Location = new Point(704, 3);
+            cbDataUpdate.Name = "cbDataUpdate";
+            cbDataUpdate.Size = new Size(47, 19);
+            cbDataUpdate.TabIndex = 11;
+            cbDataUpdate.Text = "Live";
+            cbDataUpdate.UseVisualStyleBackColor = true;
+            cbDataUpdate.CheckedChanged += cbDataUpdate_CheckedChanged;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -374,5 +387,6 @@
         private FlowLayoutPanel flowLayoutPanel2;
         private ScottPlot.WinForms.FormsPlot formsPlot2;
         private ScottPlot.WinForms.FormsPlot formsPlot3;
+        private CheckBox cbDataUpdate;
     }
 }
