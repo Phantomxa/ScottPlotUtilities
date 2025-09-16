@@ -23,7 +23,7 @@ public partial class Form1 : Form
     public string clad;
 
     List<string> legendItems = new();
-    Timer updateData = new Timer(4000);
+    Timer updateData = new Timer(5000);
 
     Dictionary<string, IPlottable> seriesDict = new Dictionary<string, IPlottable>();
 
@@ -219,27 +219,17 @@ public partial class Form1 : Form
         Color colorYellow = ScottPlot.Color.FromSDColor(System.Drawing.Color.Yellow);
         Color colorMediumSlateBlue = ScottPlot.Color.FromSDColor(System.Drawing.Color.MediumSlateBlue);
 
-        //CreateScottSignalXY(cladDevTime, cladDev, formsPlot1, "CladDev", System.Drawing.Color.Lime);
         CreateDataLogger(cladDevTime, cladDev, formsPlot1, "CladDev", seriesDict, color: colorLime);
-        //CreateScottScatterNoLineSecondary(cladExcursionTime, cladExcursion, formsPlot1, "CladExcursion", seriesDict, System.Drawing.Color.Red);
         CreateScatter(cladExcursionTime, cladExcursion, formsPlot1, "CladExcursion", seriesDict, color: colorRed, noLine: true, rightAxis: true);
-        //CreateScottScatterNoLine(airlinesTime, airlines, formsPlot1, "Airlines", seriesDict);
         CreateScatter(airlinesTime, airlines, formsPlot1, "Airlines", seriesDict, noLine: true, rightAxis: true);
-        //CreateScottSignalXY(pressuresTime, body, formsPlot3, "Body(Pa)", System.Drawing.Color.LightGray);
         CreateDataLogger(pressuresTime, body, formsPlot3, "Body(Pa)", seriesDict, color: colorLightGray);
-        //CreateScottSignalXYSecondary(pressuresTime, temp, formsPlot3, "Temp", System.Drawing.Color.Crimson);
         CreateDataLogger(pressuresTime, temp, formsPlot3, "Temp", seriesDict, color: colorCrimson, rightAxis: true);
-        //CreateScottSignalXY(pressuresTime, bore, formsPlot3, "Bore(Pa)", System.Drawing.Color.MediumPurple);
         CreateDataLogger(pressuresTime, bore, formsPlot3, "Bore(Pa)", seriesDict, color: colorMediumPurple);
 
-        //CreateScottSignalXY(furnaceFlowsTime, boreFlow, formsPlot3, "BoreFlow", System.Drawing.Color.Green);
         CreateDataLogger(furnaceFlowsTime, boreFlow, formsPlot3, "BoreFlow", seriesDict, color: colorGreen);
-        //CreateScottSignalXY(furnaceFlowsTime, sealFlow, formsPlot3, "SealFlow", System.Drawing.Color.Yellow);
         CreateDataLogger(furnaceFlowsTime, sealFlow, formsPlot3, "SealFlow", seriesDict, color: colorYellow);
 
-        //CreateScottSignalXY(cladDevTime, lengthOdometer, formsPlot1, "len_odom (Mm)", System.Drawing.Color.MediumSlateBlue);
         CreateDataLogger(cladDevTime, lengthOdometer, formsPlot1, "len_odom (Mm)", seriesDict, color: colorMediumSlateBlue);
-        //CreateScottSignalXYSecondary(cladDevTime, feedPosition, formsPlot2, "feed_pos", System.Drawing.Color.MediumSlateBlue);
         CreateDataLogger(cladDevTime, feedPosition, formsPlot2, "feed_pos", seriesDict, color: colorMediumSlateBlue, rightAxis: true);
 
         var plot1X = formsPlot1.Plot.Axes.Bottom;
@@ -309,9 +299,9 @@ public partial class Form1 : Form
             MessageBox.Show("MySQL data is empty!");
         }
 
-        if (furnaceFlowsTime.Length > 0)
+        if (pressuresTime.Length > 0)
         {
-            lastDateMS= furnaceFlowsTime[furnaceFlowsTime.Length - 1];
+            lastDateMS= pressuresTime[pressuresTime.Length - 1];
             Logger.WriteToFileLine($"Initialized lastDateMS: {lastDateMS.ToString("yyyy-MM-dd HH:mm:ss")}");
         }
         else
