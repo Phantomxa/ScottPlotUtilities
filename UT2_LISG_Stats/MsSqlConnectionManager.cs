@@ -11,7 +11,7 @@ internal class MsSqlConnectionManager
     {
         _connectionString = "Data Source = nordevsql01; Initial Catalog = drawdb; Integrated Security = true";
     }
-    public DataTable SqlConnect(string queryString)
+    public DataTable Connect(string queryString)
     {
         var dt = new DataTable();
 
@@ -30,7 +30,7 @@ internal class MsSqlConnectionManager
                     }
                     else
                     {
-                        Console.WriteLine("No rows found.");
+                        //Logger.WriteToFileLine("No rows found.");
                     }
                     reader.Close();
                 }
@@ -39,7 +39,7 @@ internal class MsSqlConnectionManager
         }
 #pragma warning restore CS0618 // Type or member is obsolete
     }
-    public List<DataTable> SqlConnectList(string queryString)
+    public List<DataTable> ConnectList(string queryString)
     {
         var server = Environment.GetEnvironmentVariable("AZURE_SERVER");
         var db = Environment.GetEnvironmentVariable("metrics_mart");

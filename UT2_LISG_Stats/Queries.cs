@@ -9,7 +9,7 @@ namespace UT2_LISG_Stats
             string syb_QueryClad = $"""
                                     SELECT event_ts, preform_no, CONVERT(INT, mach_no) AS mach_no, CONVERT(FLOAT, datum1) AS clad, CONVERT(FLOAT, datum4) AS clad_dev, CONVERT(INT, length_odom) AS length_odom, CONVERT(INT, feed_pos) AS feed_pos
                                     FROM dsdb.dbo.draw_event NOHOLDLOCK 
-                                    WHERE  event_ts >= '{startDate}'
+                                    WHERE  event_ts > '{startDate}'
                                     AND event_ts <= '{endDate}'
                                     AND event_num = 30
                                     AND mach_no = '{tower}'
@@ -26,7 +26,7 @@ namespace UT2_LISG_Stats
                                     FROM dsdb.dbo.draw_event NOHOLDLOCK
                                     WHERE
                                     event_num in (32) AND
-                                    event_ts >= '{startDate}'
+                                    event_ts > '{startDate}'
                                     AND event_ts <= '{endDate}'
                                     AND mach_no = '{tower}'
                                     AND datum3 = '1'
@@ -42,7 +42,7 @@ namespace UT2_LISG_Stats
                                     FROM dsdb.dbo.draw_event NOHOLDLOCK
                                     WHERE
                                     event_num in (39) AND
-                                    event_ts >= '{startDate}'
+                                    event_ts > '{startDate}'
                                     AND event_ts <= '{endDate}'
                                     AND mach_no = '{tower}'
                                     AND datum3 = '1'
@@ -57,7 +57,7 @@ namespace UT2_LISG_Stats
                                     FROM dsdb.dbo.draw_event NOHOLDLOCK
                                     WHERE
                                     event_num = 116
-                                    AND event_ts >= '{startDate}'
+                                    AND event_ts > '{startDate}'
                                     AND event_ts <= '{endDate}'
                                     AND mach_no = '{tower}'
                                     order by event_ts asc
@@ -71,7 +71,7 @@ namespace UT2_LISG_Stats
                                     FROM dsdb.dbo.draw_event NOHOLDLOCK
                                     WHERE
                                     event_num = 119
-                                    AND event_ts >= '{startDate}'
+                                    AND event_ts > '{startDate}'
                                     AND event_ts <= '{endDate}'
                                     AND mach_no = '{tower}'
                                     order by event_ts asc

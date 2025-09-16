@@ -4,7 +4,7 @@ namespace UT2_LISG_Stats;
 
 public static class Logger
 {
-    public static void WriteToFile(string message)
+    public static void WriteToFileLine(string message)
     {
         string path = AppDomain.CurrentDomain.BaseDirectory + "\\Logs";
         if (!Directory.Exists(path))
@@ -25,6 +25,30 @@ public static class Logger
             using (StreamWriter writer = File.AppendText(filepath))
             {
                 writer.WriteLine(message);
+            }
+        }
+    }
+    public static void WriteToFile(string message)
+    {
+        string path = AppDomain.CurrentDomain.BaseDirectory + "\\Logs";
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
+        }
+
+        string filepath = path + "\\ServiceLog_" + DateTime.Now.ToShortDateString().Replace("/", "_") + ".txt";
+        if (!File.Exists(filepath))
+        {
+            using (StreamWriter writer = File.CreateText(filepath))
+            {
+                writer.Write(message);
+            }
+        }
+        else
+        {
+            using (StreamWriter writer = File.AppendText(filepath))
+            {
+                writer.Write(message);
             }
         }
     }
@@ -60,6 +84,8 @@ public static class Logger
             WriteToFile(column.ColumnName + "\t");
         }
 
+        WriteToFileLine("");
+
         foreach (DataRow row in table.Rows)
         {
             foreach (DataColumn column in table.Columns)
@@ -70,6 +96,7 @@ public static class Logger
             if (count >= rowstoview) { break; }
             else { WriteToFile("\n"); }
         }
+
         WriteToFile("\n");
     }
 }
