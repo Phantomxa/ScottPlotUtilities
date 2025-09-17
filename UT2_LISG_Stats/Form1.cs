@@ -7,6 +7,8 @@ using System.Text;
 using Color = ScottPlot.Color;
 using Timer = System.Timers.Timer;
 
+// TESTING IF THIS COMMIT THING WORKS
+
 namespace UT2_LISG_Stats;
 
 public partial class Form1 : Form
