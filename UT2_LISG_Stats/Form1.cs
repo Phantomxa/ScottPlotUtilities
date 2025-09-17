@@ -1,4 +1,5 @@
 using ScottPlot;
+using ScottPlot.Plottables;
 using ScottPlot.WinForms;
 using System.Data;
 using System.Globalization;
@@ -160,12 +161,13 @@ public partial class Form1 : Form
         DateTime[] pressuresTime = dtPressures.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
         DateTime[] furnaceFlowsTime = dtFurnaceFlows.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
 
-        Logger.WriteToFileLine($"""
-                Printing out Last Element of All X Coordinates.
-                cladDevTime: {cladDevTime[cladDevTime.Length - 1]},
-                pressuresTime: {pressuresTime[pressuresTime.Length - 1]},
-                furnaceFlowsTime: {furnaceFlowsTime[furnaceFlowsTime.Length - 1]}
-                """);
+        List<DateTime[]> msTimesToCheck = new List<DateTime[]>() { cladDevTime, pressuresTime, furnaceFlowsTime};
+
+        Logger.WriteToFileLine("Printing out Last Element of All X Coordinates.");
+        foreach (var time in msTimesToCheck)
+        {
+            Logger.WriteToFileLine($"{nameof(time)}: {time[time.Length - 1]},"); 
+        }
 
         double[] cladDev = dtClad.AsEnumerable().Select(x => x.Field<double>("clad_dev")).ToArray();
         double[] lengthOdometer = dtClad.AsEnumerable().Select(x => (double)x.Field<int>("length_odom") / 1_000_000).ToArray();
@@ -974,22 +976,41 @@ public partial class Form1 : Form
             // Logger.WriteDataTable(dt, dt.Rows.Count);
         }
 
-        if (dtFurnaceFlows.Rows.Count > 0)
+        if (dtPressures.Rows.Count > 0)
         {
-            Logger.WriteToFileLine($"\ndtFurnaceFlows rows: {dtFurnaceFlows.Rows.Count}\n");
+            Logger.WriteToFileLine($"\ndtPressures rows: {dtPressures.Rows.Count}\n");
             DateTime[] cladDevTime = dtClad.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
             //DateTime[] cladExcursionTime = dtCladExcursion.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
             //DateTime[] airlinesTime = dtAirlines.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
             DateTime[] pressuresTime = dtPressures.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
             DateTime[] furnaceFlowsTime = dtFurnaceFlows.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
 
-            Logger.WriteToFileLine($"""
-                Printing out 1st Element of All X Coordinates.
-                cladDevTime: {cladDevTime[0]},
-                pressuresTime: {pressuresTime[0]},
-                furnaceFlowsTime: {furnaceFlowsTime[0]}
+            var msTimesToCheck = new Dictionary<string, DateTime[]>
+            {
+                { nameof(cladDevTime), cladDevTime },
+                { nameof(pressuresTime), pressuresTime },
+                { nameof(furnaceFlowsTime), furnaceFlowsTime }
+            };
 
-                """);
+            Logger.WriteToFileLine("Printing out 1st Element of All X Coordinates.");
+            foreach (var time in msTimesToCheck)
+            {
+                var name = time.Key;
+                var array = time.Value;
+
+                try
+                {
+                    Logger.WriteToFileLine($"{name}: {array[0]},");
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    Logger.WriteToFileLine($"{name} is empty. Skipping...");
+                }
+                catch (Exception ex)
+                {
+                    Logger.WriteToFileLine($"Exception when logging: {name} -> {ex}");
+                }
+            }
 
             double[] cladDev = dtClad.AsEnumerable().Select(x => x.Field<double>("clad_dev")).ToArray();
             double[] lengthOdometer = dtClad.AsEnumerable().Select(x => (double)x.Field<int>("length_odom") / 1_000_000).ToArray();
@@ -1031,42 +1052,61 @@ public partial class Form1 : Form
             var loggerLengthOdometer = (ScottPlot.Plottables.DataLogger)seriesDict["len_odom (Mm)"];
             var loggerFeedPosition = (ScottPlot.Plottables.DataLogger)seriesDict["feed_pos"];
 
-            try
+            Dictionary<ScottPlot.Plottables.DataLogger, Coordinates[]> logger = new Dictionary<ScottPlot.Plottables.DataLogger, Coordinates[]>();
+            logger.Add(loggerCladDev, pointsCladDev);
+            logger.Add(loggerBody, pointsBody);
+            logger.Add(loggerTemp, pointsTemp);
+            logger.Add(loggerBore, pointsBore);
+            logger.Add(loggerBoreFlow, pointsBoreFlow);
+            logger.Add(loggerSealFlow, pointsSealFlow);
+            logger.Add(loggerLengthOdometer, pointsLengthOdometer);
+            logger.Add(loggerFeedPosition, pointsFeedPosition);
+
+            foreach (var log in logger)
             {
-                //loggerCladExcursion.Add(pointsCladExcursions);
-                //loggerAirlines.Add(pointsAirlines);
-                loggerBody.Add(pointsBody);
-                loggerTemp.Add(pointsTemp);
-                loggerBore.Add(pointsBore);
-
-                loggerBoreFlow.Add(pointsBoreFlow);
-                loggerSealFlow.Add(pointsSealFlow);
-
-                loggerLengthOdometer.Add(pointsLengthOdometer);
-                loggerFeedPosition.Add(pointsFeedPosition);
-                loggerCladDev.Add(pointsCladDev);
-            }
-            catch (Exception ex)
-            {
-                Logger.WriteToFileLine(ex.ToString() + "\n" + ex.Data + "\n" + ex.GetType().ToString());
-                Logger.WriteToFileLine($"\nlastDateMS Value at exception: {lastDateMS.ToString("yyyy-MM-dd HH:mm:ss")}");
-                Logger.WriteToFileLine("dtFurnaceFlows rows below:");
-                Logger.WriteDataTable(dtFurnaceFlows, dtFurnaceFlows.Rows.Count);
+                var currentLogger = log.Key;
+                try
+                {
+                    currentLogger.Add(log.Value);
+                }
+                catch(ArgumentException)
+                {
+                }
+                catch (Exception ex)
+                {
+                    Logger.WriteToFileLine($"Exception when appending to logger: {ex}");
+                    Logger.WriteToFileLine($"\nlastDateMS Value at exception: {lastDateMS.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    Logger.WriteToFileLine("dtPressures:");
+                    Logger.WriteDataTable(dtPressures, dtPressures.Rows.Count);
+                } 
             }
 
-            lastDateMS = furnaceFlowsTime[furnaceFlowsTime.Length - 1];
+            lastDateMS = pressuresTime[pressuresTime.Length - 1];
             Logger.WriteToFileLine($"\nUpdating New Value lastDateMS: {lastDateMS.ToString("yyyy-MM-dd HH:mm:ss")}");
-            Logger.WriteToFileLine("dtFurnaceFlows rows below:");
-            Logger.WriteDataTable(dtFurnaceFlows, dtFurnaceFlows.Rows.Count);
+            Logger.WriteToFileLine("dtPressures:");
+            Logger.WriteDataTable(dtPressures, dtPressures.Rows.Count);
             Logger.WriteToFileLine("");
 
-            Logger.WriteToFileLine($"""
-                Printing out Last Element of All X Coordinates.
-                cladDevTime: {cladDevTime[cladDevTime.Length - 1]},
-                pressuresTime: {pressuresTime[pressuresTime.Length - 1]},
-                furnaceFlowsTime: {furnaceFlowsTime[furnaceFlowsTime.Length - 1]}
+            // Adding this so can try/catch and skip
+            Logger.WriteToFileLine("Printing out Last Element of All X Coordinates.");
+            foreach (var time in msTimesToCheck)
+            {
+                var name = time.Key;
+                var array = time.Value;
 
-                """);
+                try
+                {
+                    Logger.WriteToFileLine($"{name}: {array[array.Length - 1]},");
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    Logger.WriteToFileLine($"{name} is empty. Skipping...");
+                }
+                catch (Exception ex)
+                {
+                    Logger.WriteToFileLine($"Exception when logging: {name} -> {ex}");
+                }
+            }
         }
 
         formsPlot1.Invoke((MethodInvoker)(() =>
