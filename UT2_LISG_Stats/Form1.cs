@@ -7,8 +7,6 @@ using System.Text;
 using Color = ScottPlot.Color;
 using Timer = System.Timers.Timer;
 
-// TESTING IF THIS COMMIT THING WORKS
-
 namespace UT2_LISG_Stats;
 
 public partial class Form1 : Form
@@ -225,7 +223,7 @@ public partial class Form1 : Form
 
         CreateDataLogger(cladDevTime, cladDev, formsPlot1, "CladDev", seriesDict, color: colorLime);
         CreateScatter(cladExcursionTime, cladExcursion, formsPlot1, "CladExcursion", seriesDict, color: colorRed, noLine: true, rightAxis: true);
-        CreateScatter(airlinesTime, airlines, formsPlot1, "Airlines", seriesDict, noLine: true, rightAxis: true);
+        CreateScatter(airlinesTime, airlines, formsPlot1, "Airlines", seriesDict, noLine: true);
         CreateDataLogger(pressuresTime, body, formsPlot3, "Body(Pa)", seriesDict, color: colorLightGray);
         CreateDataLogger(pressuresTime, temp, formsPlot3, "Temp", seriesDict, color: colorCrimson, rightAxis: true);
         CreateDataLogger(pressuresTime, bore, formsPlot3, "Bore(Pa)", seriesDict, color: colorMediumPurple);
