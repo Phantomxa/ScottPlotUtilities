@@ -254,7 +254,6 @@ public partial class Form1 : Form
         else
         {
             MessageBox.Show("dtPressures data is empty!");
-
             lastDateMS = date2;
         }
 
