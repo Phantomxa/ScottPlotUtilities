@@ -154,85 +154,109 @@ public partial class Form1 : Form
             throw;
         }
 
-        DateTime[] xValues = dt.AsEnumerable().Select(x => x.Field<DateTime>("t_stamp")).ToArray();
-        DateTime[] cladDevTime = dtClad.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
-        DateTime[] cladExcursionTime = dtCladExcursion.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
-        DateTime[] airlinesTime = dtAirlines.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
-        DateTime[] pressuresTime = dtPressures.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
-        DateTime[] furnaceFlowsTime = dtFurnaceFlows.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
-
-        List<DateTime[]> msTimesToCheck = new List<DateTime[]>() { cladDevTime, pressuresTime, furnaceFlowsTime};
-
-        Logger.WriteToFileLine("Printing out Last Element of All X Coordinates.");
-        foreach (var time in msTimesToCheck)
+        if (dt.Rows.Count > 0)
         {
-            Logger.WriteToFileLine($"{nameof(time)}: {time[time.Length - 1]},"); 
+            DateTime[] xValues = dt.AsEnumerable().Select(x => x.Field<DateTime>("t_stamp")).ToArray();
+
+            if (towerInt < 385)
+            {
+                double[] lr = dt.AsEnumerable().Select(x => (double)x.Field<float>("Cersa_Xpos_mm")).ToArray();
+                double[] fb = dt.AsEnumerable().Select(x => (double)x.Field<float>("Cersa_Ypos_mm")).ToArray();
+                double[] p2pVals = dt.AsEnumerable().Select(x => (double)x.Field<float>("Diam_Peak_Peak")).ToArray();
+                double[] cladVals = dt.AsEnumerable().Select(x => (double)x.Field<float>(clad)).ToArray();
+
+                CreateDataLogger(xValues, cladVals, formsPlot1, "CladDiam", seriesDict, rightAxis: true);
+                CreateDataLogger(xValues, p2pVals, formsPlot1, "P2P", seriesDict);
+                CreateDataLogger(xValues, lr, formsPlot2, "LR+", seriesDict);
+                CreateDataLogger(xValues, fb, formsPlot2, "FB+", seriesDict);
+
+                DataPoints = ConvertToCoordinates(xValues, p2pVals);
+            }
+            else
+            {
+                double[] p2pVals = dt.AsEnumerable().Select(x => (double)x.Field<Decimal>("Diam_Peak_Peak")).ToArray();
+                double[] cladVals = dt.AsEnumerable().Select(x => (double)x.Field<Decimal>(clad)).ToArray();
+                double[] pos = dt.AsEnumerable().Select(x => (double)x.Field<Decimal>("Position")).ToArray();
+                CreateScottSignalXYSecondary(xValues, cladVals, formsPlot1, "CladDiam", seriesDict);
+                //CreateSignalXY(xValues, cladVals, formsPlot1, "CladDiam", seriesDict, rightAxis: true);
+                CreateScottSignalXY(xValues, p2pVals, formsPlot1, "P2P", seriesDict);
+                //CreateSignalXY(xValues, p2pVals, formsPlot1, "P2P", seriesDict);
+                CreateScottSignalXY(xValues, pos, formsPlot2, "Position", seriesDict);
+                //CreateSignalXY(xValues, pos, formsPlot2, "Position", seriesDict);
+
+                DataPoints = ConvertToCoordinates(xValues, p2pVals);
+            }
+
+            lastDateMY = xValues[xValues.Length - 1];
+            Logger.WriteToFileLine($"Initialized lastDateMY: {lastDateMY.ToString("yyyy-MM-dd HH:mm:ss")}");
         }
-
-        double[] cladDev = dtClad.AsEnumerable().Select(x => x.Field<double>("clad_dev")).ToArray();
-        double[] lengthOdometer = dtClad.AsEnumerable().Select(x => (double)x.Field<int>("length_odom") / 1_000_000).ToArray();
-        double[] feedPosition = dtClad.AsEnumerable().Select(x => (double)x.Field<int>("feed_pos")).ToArray();
-        double[] cladExcursion = dtCladExcursion.AsEnumerable().Select(x => x.Field<double>("datum1")).ToArray();
-        double[] bore = dtPressures.AsEnumerable().Select(x => x.Field<double>("BorePressure")).ToArray();
-        double[] body = dtPressures.AsEnumerable().Select(x => x.Field<double>("BodyPressure")).ToArray();
-        double[] temp = dtPressures.AsEnumerable().Select(x => x.Field<double>("Temperature")).ToArray();
-        double[] airlines = Generate.Repeating(airlinesTime.Count(), 0.0);
-
-        double[] boreFlow = dtFurnaceFlows.AsEnumerable().Select(x => x.Field<double>("Ar_Bore")).ToArray();
-        double[] sealFlow = dtFurnaceFlows.AsEnumerable().Select(x => x.Field<double>("Ar_Seal")).ToArray();
+        else
+        {
+            MessageBox.Show("MySQL data is empty!");
+        }
 
         formsPlot1.Plot.Add.HorizontalLine(0.6, 2, Colors.Red, LinePattern.Dashed);
         formsPlot1.Plot.Add.HorizontalLine(0.15, 2, Colors.Black, LinePattern.Dashed);
 
-        if (towerInt < 385)
+        if (dtPressures.Rows.Count > 0)
         {
-            double[] lr = dt.AsEnumerable().Select(x => (double)x.Field<float>("Cersa_Xpos_mm")).ToArray();
-            double[] fb = dt.AsEnumerable().Select(x => (double)x.Field<float>("Cersa_Ypos_mm")).ToArray();
-            double[] p2pVals = dt.AsEnumerable().Select(x => (double)x.Field<float>("Diam_Peak_Peak")).ToArray();
-            double[] cladVals = dt.AsEnumerable().Select(x => (double)x.Field<float>(clad)).ToArray();
+            DateTime[] cladDevTime = dtClad.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
+            DateTime[] cladExcursionTime = dtCladExcursion.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
+            DateTime[] airlinesTime = dtAirlines.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
+            DateTime[] pressuresTime = dtPressures.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
+            DateTime[] furnaceFlowsTime = dtFurnaceFlows.AsEnumerable().Select(x => x.Field<DateTime>("event_ts")).ToArray();
 
-            CreateDataLogger(xValues, cladVals, formsPlot1, "CladDiam", seriesDict, rightAxis: true);
-            CreateDataLogger(xValues, p2pVals, formsPlot1, "P2P", seriesDict);
-            CreateDataLogger(xValues, lr, formsPlot2, "LR+", seriesDict);
-            CreateDataLogger(xValues, fb, formsPlot2, "FB+", seriesDict);
+            List<DateTime[]> msTimesToCheck = new List<DateTime[]>() { cladDevTime, pressuresTime, furnaceFlowsTime };
 
-            DataPoints = ConvertToCoordinates(xValues, p2pVals);
+            Logger.WriteToFileLine("Printing out Last Element of All X Coordinates.");
+            foreach (var time in msTimesToCheck)
+            {
+                Logger.WriteToFileLine($"{nameof(time)}: {time[time.Length - 1]},");
+            }
+
+            double[] cladDev = dtClad.AsEnumerable().Select(x => x.Field<double>("clad_dev")).ToArray();
+            double[] lengthOdometer = dtClad.AsEnumerable().Select(x => (double)x.Field<int>("length_odom") / 1_000_000).ToArray();
+            double[] feedPosition = dtClad.AsEnumerable().Select(x => (double)x.Field<int>("feed_pos")).ToArray();
+            double[] cladExcursion = dtCladExcursion.AsEnumerable().Select(x => x.Field<double>("datum1")).ToArray();
+            double[] bore = dtPressures.AsEnumerable().Select(x => x.Field<double>("BorePressure")).ToArray();
+            double[] body = dtPressures.AsEnumerable().Select(x => x.Field<double>("BodyPressure")).ToArray();
+            double[] temp = dtPressures.AsEnumerable().Select(x => x.Field<double>("Temperature")).ToArray();
+            double[] airlines = Generate.Repeating(airlinesTime.Count(), 0.0);
+
+            double[] boreFlow = dtFurnaceFlows.AsEnumerable().Select(x => x.Field<double>("Ar_Bore")).ToArray();
+            double[] sealFlow = dtFurnaceFlows.AsEnumerable().Select(x => x.Field<double>("Ar_Seal")).ToArray();
+
+            Color colorLime = ScottPlot.Color.FromSDColor(System.Drawing.Color.Lime);
+            Color colorRed = ScottPlot.Color.FromSDColor(System.Drawing.Color.Red);
+            Color colorLightGray = ScottPlot.Color.FromSDColor(System.Drawing.Color.LightGray);
+            Color colorCrimson = ScottPlot.Color.FromSDColor(System.Drawing.Color.Crimson);
+            Color colorMediumPurple = ScottPlot.Color.FromSDColor(System.Drawing.Color.MediumPurple);
+            Color colorGreen = ScottPlot.Color.FromSDColor(System.Drawing.Color.Green);
+            Color colorYellow = ScottPlot.Color.FromSDColor(System.Drawing.Color.Yellow);
+            Color colorMediumSlateBlue = ScottPlot.Color.FromSDColor(System.Drawing.Color.MediumSlateBlue);
+
+            CreateDataLogger(cladDevTime, cladDev, formsPlot1, "CladDev", seriesDict, color: colorLime);
+            CreateScatter(cladExcursionTime, cladExcursion, formsPlot1, "CladExcursion", seriesDict, color: colorRed, noLine: true, rightAxis: true);
+            CreateScatter(airlinesTime, airlines, formsPlot1, "Airlines", seriesDict, noLine: true);
+            CreateDataLogger(pressuresTime, body, formsPlot3, "Body(Pa)", seriesDict, color: colorLightGray);
+            CreateDataLogger(pressuresTime, temp, formsPlot3, "Temp", seriesDict, color: colorCrimson, rightAxis: true);
+            CreateDataLogger(pressuresTime, bore, formsPlot3, "Bore(Pa)", seriesDict, color: colorMediumPurple);
+
+            CreateDataLogger(furnaceFlowsTime, boreFlow, formsPlot3, "BoreFlow", seriesDict, color: colorGreen);
+            CreateDataLogger(furnaceFlowsTime, sealFlow, formsPlot3, "SealFlow", seriesDict, color: colorYellow);
+
+            CreateDataLogger(cladDevTime, lengthOdometer, formsPlot1, "len_odom (Mm)", seriesDict, color: colorMediumSlateBlue);
+            CreateDataLogger(cladDevTime, feedPosition, formsPlot2, "feed_pos", seriesDict, color: colorMediumSlateBlue, rightAxis: true);
+
+            lastDateMS = pressuresTime[pressuresTime.Length - 1];
+            Logger.WriteToFileLine($"Initialized lastDateMS: {lastDateMS.ToString("yyyy-MM-dd HH:mm:ss")}");
         }
         else
         {
-            double[] p2pVals = dt.AsEnumerable().Select(x => (double)x.Field<Decimal>("Diam_Peak_Peak")).ToArray();
-            double[] cladVals = dt.AsEnumerable().Select(x => (double)x.Field<Decimal>(clad)).ToArray();
-            double[] pos = dt.AsEnumerable().Select(x => (double)x.Field<Decimal>("Position")).ToArray();
-            CreateScottSignalXYSecondary(xValues, cladVals, formsPlot1, "CladDiam", seriesDict);
-            //CreateSignalXY(xValues, cladVals, formsPlot1, "CladDiam", seriesDict, rightAxis: true);
-            CreateScottSignalXY(xValues, p2pVals, formsPlot1, "P2P", seriesDict);
-            //CreateSignalXY(xValues, p2pVals, formsPlot1, "P2P", seriesDict);
-            CreateScottSignalXY(xValues, pos, formsPlot2, "Position", seriesDict);
-            //CreateSignalXY(xValues, pos, formsPlot2, "Position", seriesDict);
+            MessageBox.Show("dtPressures data is empty!");
 
-            DataPoints = ConvertToCoordinates(xValues, p2pVals);
+            lastDateMS = date2;
         }
-        Color colorLime = ScottPlot.Color.FromSDColor(System.Drawing.Color.Lime);
-        Color colorRed = ScottPlot.Color.FromSDColor(System.Drawing.Color.Red);
-        Color colorLightGray = ScottPlot.Color.FromSDColor(System.Drawing.Color.LightGray);
-        Color colorCrimson = ScottPlot.Color.FromSDColor(System.Drawing.Color.Crimson);
-        Color colorMediumPurple = ScottPlot.Color.FromSDColor(System.Drawing.Color.MediumPurple);
-        Color colorGreen = ScottPlot.Color.FromSDColor(System.Drawing.Color.Green);
-        Color colorYellow = ScottPlot.Color.FromSDColor(System.Drawing.Color.Yellow);
-        Color colorMediumSlateBlue = ScottPlot.Color.FromSDColor(System.Drawing.Color.MediumSlateBlue);
-
-        CreateDataLogger(cladDevTime, cladDev, formsPlot1, "CladDev", seriesDict, color: colorLime);
-        CreateScatter(cladExcursionTime, cladExcursion, formsPlot1, "CladExcursion", seriesDict, color: colorRed, noLine: true, rightAxis: true);
-        CreateScatter(airlinesTime, airlines, formsPlot1, "Airlines", seriesDict, noLine: true);
-        CreateDataLogger(pressuresTime, body, formsPlot3, "Body(Pa)", seriesDict, color: colorLightGray);
-        CreateDataLogger(pressuresTime, temp, formsPlot3, "Temp", seriesDict, color: colorCrimson, rightAxis: true);
-        CreateDataLogger(pressuresTime, bore, formsPlot3, "Bore(Pa)", seriesDict, color: colorMediumPurple);
-
-        CreateDataLogger(furnaceFlowsTime, boreFlow, formsPlot3, "BoreFlow", seriesDict, color: colorGreen);
-        CreateDataLogger(furnaceFlowsTime, sealFlow, formsPlot3, "SealFlow", seriesDict, color: colorYellow);
-
-        CreateDataLogger(cladDevTime, lengthOdometer, formsPlot1, "len_odom (Mm)", seriesDict, color: colorMediumSlateBlue);
-        CreateDataLogger(cladDevTime, feedPosition, formsPlot2, "feed_pos", seriesDict, color: colorMediumSlateBlue, rightAxis: true);
 
         var plot1X = formsPlot1.Plot.Axes.Bottom;
         var plot2X = formsPlot2.Plot.Axes.Bottom;
@@ -290,32 +314,11 @@ public partial class Form1 : Form
             pointsAnnotation3.Text = "No point hovered";
         };
 
-
-        if (xValues.Length > 0)
-        {
-            lastDateMY = xValues[xValues.Length - 1];
-            Logger.WriteToFileLine($"Initialized lastDateMY: {lastDateMY.ToString("yyyy-MM-dd HH:mm:ss")}");
-        }
-        else
-        {
-            MessageBox.Show("MySQL data is empty!");
-        }
-
-        if (pressuresTime.Length > 0)
-        {
-            lastDateMS= pressuresTime[pressuresTime.Length - 1];
-            Logger.WriteToFileLine($"Initialized lastDateMS: {lastDateMS.ToString("yyyy-MM-dd HH:mm:ss")}");
-        }
-        else
-        {
-            MessageBox.Show("Furance Flows data is empty!");
-        }
-
         formsPlot1.Plot.Legend.Alignment = Alignment.LowerLeft;
         formsPlot2.Plot.Legend.Alignment = Alignment.LowerLeft;
         formsPlot3.Plot.Legend.Alignment = Alignment.LowerLeft;
     }
-
+    #region other methods
     private static void SetSybaseQueries(int towerInt, string startDate, string endDate, out string cladDevQuery, out string cladExcursionQuery, out string airlinesQuery, out string pressuresQuery, out string furnaceFlowsQuery)
     {
         cladDevQuery = Queries.SybaseCladDeviation(towerInt.ToString(), startDate, endDate);
@@ -848,7 +851,7 @@ public partial class Form1 : Form
             }
         });
     }
-
+    #endregion
     private void UpdateData_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
         int.TryParse(tbTower1.Text, out int towerInt);
@@ -971,9 +974,6 @@ public partial class Form1 : Form
                 // DataPoints = ConvertToCoordinates(xValues, p2pVals);
             }
             lastDateMY = xValues[xValues.Length - 1];
-            // Logger.WriteToFileLine($"Updating New Value lastDateMY: {lastDateMY.ToString("yyyy-MM-dd HH:mm:ss")}; dt rows: {dt.Rows.Count}");
-            // Logger.WriteToFileLine("dt rows below:");
-            // Logger.WriteDataTable(dt, dt.Rows.Count);
         }
 
         if (dtPressures.Rows.Count > 0)
