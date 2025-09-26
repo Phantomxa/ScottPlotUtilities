@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Color = ScottPlot.Color;
 
-namespace BreakRateT1.ScottPlotUtilities
+namespace ScottPlotUtilities
 {
     public static class ScottPlotExtensions
     {
