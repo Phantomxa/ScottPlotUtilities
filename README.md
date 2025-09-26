@@ -1,1 +1,2 @@
-# UT2_LISG_Stats
+# ScottPlotUtilities
+Group of classes to help charting with ScottPlot easier.
