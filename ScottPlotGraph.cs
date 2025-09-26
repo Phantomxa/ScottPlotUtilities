@@ -12,7 +12,7 @@ using ScottPlot.Plottables;
 
 namespace ScottPlotUtilities;
 
-public static class ScottPlotHelpers
+public static class ScottPlotGraph
 {
     #region Scatter / SignalXY / DataLogger
 
