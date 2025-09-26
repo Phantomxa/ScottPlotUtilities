@@ -9,7 +9,7 @@ using Color = ScottPlot.Color;
 using System.Data;
 using System.Globalization;
 
-namespace BreakRateT1.ScottPlotUtilities
+namespace ScottPlotUtilities
 {
     internal class ScottPlotGraph
     {

@@ -1,6 +1,6 @@
 ﻿using ScottPlot;
 
-namespace BreakRateT1.ScottPlotUtilities
+namespace ScottPlotUtilities
 {
     public class ScatterSeriesWrapper
     {
