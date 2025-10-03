@@ -9,7 +9,7 @@ namespace Measurements
     internal class Queries
     {
 
-        public string CoatingGeometry(string preform_no)
+        public static string CoatingGeometry(string preform_no)
         {
             string query = $"""
                 SELECT fiber_id, f.core_id, f.master_preform_no, f.drawn_id, f.parent_id, r.length, draw_start_m, 
