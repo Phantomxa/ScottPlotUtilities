@@ -37,13 +37,13 @@
             poisonDateTime1 = new ReaLTaiizor.Controls.PoisonDateTime();
             poisonDateTime2 = new ReaLTaiizor.Controls.PoisonDateTime();
             btnExecute = new ReaLTaiizor.Controls.PoisonButton();
-            flowLayoutPanel2 = new FlowLayoutPanel();
-            formsPlot2 = new ScottPlot.WinForms.FormsPlot();
+            tableLayoutPanel4 = new TableLayoutPanel();
+            formsPlot1 = new ScottPlot.WinForms.FormsPlot();
             tableLayoutPanel1.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
-            flowLayoutPanel2.SuspendLayout();
+            tableLayoutPanel4.SuspendLayout();
             SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -51,7 +51,7 @@
             tableLayoutPanel1.ColumnCount = 1;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel1.Controls.Add(flowLayoutPanel1, 0, 0);
-            tableLayoutPanel1.Controls.Add(flowLayoutPanel2, 0, 1);
+            tableLayoutPanel1.Controls.Add(tableLayoutPanel4, 0, 1);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -198,22 +198,28 @@
             btnExecute.UseSelectable = true;
             btnExecute.Click += btnExecute_Click;
             // 
-            // flowLayoutPanel2
+            // tableLayoutPanel4
             // 
-            flowLayoutPanel2.Controls.Add(formsPlot2);
-            flowLayoutPanel2.Dock = DockStyle.Fill;
-            flowLayoutPanel2.Location = new Point(3, 63);
-            flowLayoutPanel2.Name = "flowLayoutPanel2";
-            flowLayoutPanel2.Size = new Size(794, 384);
-            flowLayoutPanel2.TabIndex = 1;
+            tableLayoutPanel4.ColumnCount = 1;
+            tableLayoutPanel4.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel4.Controls.Add(formsPlot1, 0, 0);
+            tableLayoutPanel4.Dock = DockStyle.Fill;
+            tableLayoutPanel4.Location = new Point(3, 63);
+            tableLayoutPanel4.Name = "tableLayoutPanel4";
+            tableLayoutPanel4.RowCount = 2;
+            tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 98.0392151F));
+            tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 1.96078432F));
+            tableLayoutPanel4.Size = new Size(794, 384);
+            tableLayoutPanel4.TabIndex = 1;
             // 
-            // formsPlot2
+            // formsPlot1
             // 
-            formsPlot2.DisplayScale = 1F;
-            formsPlot2.Location = new Point(3, 3);
-            formsPlot2.Name = "formsPlot2";
-            formsPlot2.Size = new Size(738, 359);
-            formsPlot2.TabIndex = 1;
+            formsPlot1.DisplayScale = 1F;
+            formsPlot1.Dock = DockStyle.Fill;
+            formsPlot1.Location = new Point(3, 3);
+            formsPlot1.Name = "formsPlot1";
+            formsPlot1.Size = new Size(788, 370);
+            formsPlot1.TabIndex = 0;
             // 
             // Form1
             // 
@@ -227,7 +233,7 @@
             flowLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel2.ResumeLayout(false);
             tableLayoutPanel3.ResumeLayout(false);
-            flowLayoutPanel2.ResumeLayout(false);
+            tableLayoutPanel4.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -235,7 +241,6 @@
 
         private TableLayoutPanel tableLayoutPanel1;
         private FlowLayoutPanel flowLayoutPanel1;
-        private FlowLayoutPanel flowLayoutPanel2;
         private TableLayoutPanel tableLayoutPanel2;
         private ReaLTaiizor.Controls.PoisonTextBox tbPreformno;
         private ReaLTaiizor.Controls.PoisonTextBox tbTower;
@@ -243,6 +248,7 @@
         private ReaLTaiizor.Controls.PoisonDateTime poisonDateTime1;
         private ReaLTaiizor.Controls.PoisonDateTime poisonDateTime2;
         private ReaLTaiizor.Controls.PoisonButton btnExecute;
-        private ScottPlot.WinForms.FormsPlot formsPlot2;
+        private TableLayoutPanel tableLayoutPanel4;
+        private ScottPlot.WinForms.FormsPlot formsPlot1;
     }
 }

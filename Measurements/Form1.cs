@@ -1,3 +1,6 @@
+using ScottPlotUtilities;
+using System.Data;
+
 namespace Measurements
 {
     public partial class Form1 : Form
@@ -19,15 +22,31 @@ namespace Measurements
 
         private void btnExecute_Click(object sender, EventArgs e)
         {
+            var count = 0;
             var preform_no = tbPreformno.Text;
 
             var connection = new MsSqlConnectionManager();
 
             var query = Queries.CoatingGeometry(preform_no);
 
-            var dtCoat = connection.Connect(query);
+            var dtCoatingData = connection.ConnectList(query);
 
+            foreach (var dt in dtCoatingData)
+            {
+                var x = dt.AsEnumerable().Select(x => (double)x[0]).ToArray();
+                var y = dt.AsEnumerable().Select(x => Convert.ToDouble(x[1])).ToArray();
 
+                var xName = dt.Columns[0].ColumnName;
+                var yName = dt.Columns[1].ColumnName;
+
+                if (count <= 1) { ScottPlotGraph.CreateScatter(x, y, formsPlot1, yName); }
+                else { ScottPlotGraph.CreateScatter(x, y, formsPlot1, yName, rightAxis: true); }
+
+                count++;
+            }
+
+            formsPlot1.PerformAutoScale();
+            formsPlot1.Refresh();
         }
     }
 }
