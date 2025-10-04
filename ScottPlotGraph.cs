@@ -34,23 +34,6 @@ public static class ScottPlotGraph
         formsPlot.Refresh();
         return scatter;
     }
-    public static IPlottable CreateScatter(double[] xs, double[] ys, FormsPlot formsPlot,
-        string legendName,
-        Dictionary<string, IPlottable>? dict = null,
-        Color? color = null,
-        bool noLine = false,
-        bool rightAxis = false)
-    {
-        var scatter = formsPlot.Plot.Add.Scatter(xs, ys);
-        scatter.LegendText = legendName;
-        if (color.HasValue) scatter.LineColor = color.Value;
-        if (noLine) scatter.LineWidth = 0;
-        if (rightAxis) scatter.Axes.YAxis = formsPlot.Plot.Axes.Right;
-        if (dict is not null) dict[legendName] = scatter;
-
-        formsPlot.Refresh();
-        return scatter;
-    }
 
     public static IPlottable CreateSignalXY(DateTime[] xs, double[] ys, FormsPlot formsPlot,
         string legendName,
