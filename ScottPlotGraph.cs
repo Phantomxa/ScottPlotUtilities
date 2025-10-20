@@ -10,7 +10,7 @@ using System.Data;
 using System.Globalization;
 using ScottPlot.Plottables;
 
-namespace ScottPlotUtilities;
+namespace ScottPlotUtilities; // testing this
 
 public static class ScottPlotGraph
 {
