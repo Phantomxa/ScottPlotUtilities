@@ -193,7 +193,8 @@ public static class ScottPlotGraph
         Dictionary<string, IPlottable>? dict = null,
         System.Drawing.Color? color = null,
         bool rightAxis = false,
-        string? title = null)
+        string? title = null,
+        System.Drawing.Color? lineColor = null)
     {
         if (table == null) throw new ArgumentNullException(nameof(table));
         if (formsPlot == null) throw new ArgumentNullException(nameof(formsPlot));
@@ -292,7 +293,8 @@ public static class ScottPlotGraph
 
             if (color.HasValue)
                 box.FillColor = ScottPlot.Color.FromColor(color.Value);
-
+            if (lineColor.HasValue)
+                box.LineColor = ScottPlot.Color.FromColor(lineColor.Value);
             boxes.Add(box);
         }
 
