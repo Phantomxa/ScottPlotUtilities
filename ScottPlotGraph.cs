@@ -38,7 +38,7 @@ public static class ScottPlotGraph
         formsPlot.Refresh();
         return scatter;
     }
-    public static IPlottable CreateScatter(double[] xs, double[] ys, FormsPlot formsPlot,
+    public static Scatter CreateScatter(double[] xs, double[] ys, FormsPlot formsPlot,
         string? legendName = null,
         Dictionary<string, IPlottable>? dict = null,
         Color? color = null,
