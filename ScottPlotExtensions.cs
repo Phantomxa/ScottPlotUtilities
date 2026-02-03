@@ -37,9 +37,12 @@ namespace ScottPlotUtilities
             ScottPlot.Color axesFrameColor = ScottPlot.Color.FromColor(System.Drawing.Color.FromArgb(255, 255, 255));
 
             plot.Axes.FrameColor(axesFrameColor);
+            plot.Axes.Bottom.MinorTickStyle.Color = axesFrameColor;
             plot.Grid.XAxisStyle.MajorLineStyle.Color = minimalColor;
             plot.Grid.YAxisStyle.MajorLineStyle.Color = minimalColor;
             plot.Grid.XAxisStyle.MajorLineStyle.Width = 1;
+            plot.FigureBackground.Color = axesFrameColor;
+
 
             foreach (var yAx in plot.Axes.GetYAxes())
             {
