@@ -31,7 +31,7 @@ public static class ScottPlotGraph
         if (color.HasValue) scatter.LineColor = color.Value;
         if (noLine) scatter.LineWidth = 0;
         if (rightAxis) scatter.Axes.YAxis = formsPlot.Plot.Axes.Right;
-        dict[legendName] = scatter;
+        if (dict is not null) dict[legendName] = scatter;
 
         formsPlot.Plot.Axes.DateTimeTicksBottom();
         formsPlot.Plot.Axes.AutoScale();
@@ -66,7 +66,7 @@ public static class ScottPlotGraph
         sig.LegendText = legendName;
         if (color.HasValue) sig.LineColor = color.Value;
         if (rightAxis) sig.Axes.YAxis = formsPlot.Plot.Axes.Right;
-        dict[legendName] = sig;
+        if (dict is not null) dict[legendName] = sig;
 
         formsPlot.Plot.Axes.DateTimeTicksBottom();
         formsPlot.Refresh();
@@ -87,7 +87,7 @@ public static class ScottPlotGraph
 
         double[] xOADates = Array.ConvertAll(xs, dt => dt.ToOADate());
         logger.Add(xOADates, ys);
-        dict[legendName] = logger;
+        if (dict is not null) dict[legendName] = logger;
 
         formsPlot.Plot.Axes.DateTimeTicksBottom();
         formsPlot.Refresh();
