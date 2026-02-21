@@ -47,7 +47,7 @@ public static class ScottPlotGraph
     {
         var scatter = formsPlot.Plot.Add.Scatter(xs, ys);
         if (legendName is not null) scatter.LegendText = legendName;
-        if (color.HasValue) scatter.LineColor = color.Value;
+        if (color.HasValue) scatter.Color = color.Value;
         if (noLine) scatter.LineWidth = 0;
         if (rightAxis) scatter.Axes.YAxis = formsPlot.Plot.Axes.Right;
         if (dict is not null) dict[legendName] = scatter;
@@ -64,7 +64,7 @@ public static class ScottPlotGraph
     {
         var sig = formsPlot.Plot.Add.SignalXY(xs, ys);
         sig.LegendText = legendName;
-        if (color.HasValue) sig.LineColor = color.Value;
+        if (color.HasValue) sig.Color = color.Value;
         if (rightAxis) sig.Axes.YAxis = formsPlot.Plot.Axes.Right;
         if (dict is not null) dict[legendName] = sig;
 
