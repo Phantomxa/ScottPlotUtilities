@@ -194,7 +194,8 @@ public static class ScottPlotGraph
         System.Drawing.Color? color = null,
         bool rightAxis = false,
         string? title = null,
-        System.Drawing.Color? lineColor = null)
+        System.Drawing.Color? lineColor = null,
+        bool showElementCount = false)
     {
         if (table == null) throw new ArgumentNullException(nameof(table));
         if (formsPlot == null) throw new ArgumentNullException(nameof(formsPlot));
@@ -203,6 +204,7 @@ public static class ScottPlotGraph
 
         // Build groups: key -> List<double>
         var groups = new List<(string Label, double Position, List<double> Values)>();
+        var counts = string.Empty;
 
         if (grouping == BoxGrouping.Category)
         {
@@ -215,7 +217,8 @@ public static class ScottPlotGraph
             {
                 var values = g.Select(r => Convert.ToDouble(r[valueColumn])).Where(d => !double.IsNaN(d) && !double.IsInfinity(d)).ToList();
                 if (values.Count == 0) continue;
-                groups.Add((Label: g.Key, Position: i, Values: values));
+                if (showElementCount) counts = $", {values.Count}";
+                groups.Add((Label: g.Key.Trim() + counts, Position: i, Values: values));
                 i++;
             }
         }
@@ -263,9 +266,13 @@ public static class ScottPlotGraph
                 double pos = (grouping == BoxGrouping.Yyyymmdd) ? DateTime.ParseExact(g.Key, "yyyyMMdd", CultureInfo.InvariantCulture).ToOADate()
                                     : DateTime.ParseExact(g.Key, "yyyy-MM-dd", CultureInfo.InvariantCulture).ToOADate();
 
+                if (showElementCount) counts = $", {values.Count}";
                 // user-visible label (for category-like axis if desired)
-                string label = (grouping == BoxGrouping.Yyyymmdd) ? DateTime.ParseExact(g.Key, "yyyyMMdd", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
-                                  : g.Key;
+                string label = (grouping == BoxGrouping.Yyyymmdd) ?
+                    DateTime.ParseExact(g.Key, "yyyyMMdd", CultureInfo.InvariantCulture).
+                            ToString("yyyy-MM-dd", CultureInfo.InvariantCulture).
+                            Trim() + counts
+                    : g.Key.Trim() + counts;
 
                 groups.Add((Label: label, Position: pos, Values: values));
             }
