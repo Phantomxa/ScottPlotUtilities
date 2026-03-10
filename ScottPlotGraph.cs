@@ -475,4 +475,22 @@ public static class ScottPlotGraph
             : sorted[idx];
     }
     #endregion
+
+    #region General Helpers
+    public static void LinkBottomAxes(params FormsPlot[] plots)
+    {
+        for (int i = 0; i < plots.Length; i++)
+        {
+            for (int j = 0; j < plots.Length; j++)
+            {
+                if (i == j) continue;
+
+                var sourcePlot = plots[i];
+                var targetPlot = plots[j];
+
+                sourcePlot.Plot.Axes.Link(sourcePlot.Plot.Axes.Bottom, targetPlot.Plot.Axes.Bottom, targetPlot.Plot);
+            }
+        }
+    } 
+    #endregion
 }

@@ -25,7 +25,7 @@ namespace ScottPlotUtilities
             formsPlot.Plot.Legend.FontColor = Color.FromHex("#d7d7d7");
             formsPlot.Plot.Legend.OutlineColor = Color.FromHex("#d7d7d7");
         }
-        public static void ThemeMinimal(this ScottPlot.WinForms.FormsPlot formsPlot,
+        public static void ThemeMinimal(this FormsPlot formsPlot,
         string? title = null, float? titleSize = null,
         string? leftTitle = null, float? leftSize = null,
         string? rightTitle = null, float? rightSize = null,
@@ -72,6 +72,19 @@ namespace ScottPlotUtilities
             }
 
             formsPlot.Refresh();
+        }
+        public static void FormatLegend_Minimal(this FormsPlot formsPlot, int fontSize = 8, int interItemPadding = 2,
+            int margin = 3, int padH = 2, int padV = 0, int symWidth = 12, int symPad = 3, ScottPlot.Alignment align = Alignment.UpperCenter)
+        {
+            formsPlot.Plot.Legend.FontSize = fontSize;
+            formsPlot.Plot.Legend.Alignment = align;
+            formsPlot.Plot.Legend.TightHorizontalWrapping = true;
+            formsPlot.Plot.Legend.Orientation = ScottPlot.Orientation.Horizontal;
+            formsPlot.Plot.Legend.InterItemPadding = new PixelPadding(interItemPadding, interItemPadding, 0, 0);
+            formsPlot.Plot.Legend.Margin = new PixelPadding(margin, margin, margin, margin);
+            formsPlot.Plot.Legend.Padding = new PixelPadding(padH, padH, padV, padV);
+            formsPlot.Plot.Legend.SymbolWidth = symWidth;
+            formsPlot.Plot.Legend.SymbolPadding = symPad;
         }
     }
 }
