@@ -184,18 +184,21 @@ public static class ScottPlotGraph
     /// Returns the IPlottable produced (the Boxes group).
     /// </summary>
     public static IPlottable CreateBoxPlotFromTable(
-        DataTable table,
-        string groupColumn,
-        string valueColumn,
-        BoxGrouping grouping,
-        FormsPlot formsPlot,
-        string legendName = "",
-        Dictionary<string, IPlottable>? dict = null,
-        System.Drawing.Color? color = null,
-        bool rightAxis = false,
-        string? title = null,
-        System.Drawing.Color? lineColor = null,
-        bool showElementCount = false)
+    DataTable table,
+    string groupColumn,
+    string valueColumn,
+    BoxGrouping grouping,
+    FormsPlot formsPlot,
+    string legendName = "",
+    Dictionary<string, IPlottable>? dict = null,
+    System.Drawing.Color? color = null,
+    bool rightAxis = false,
+    string? title = null,
+    System.Drawing.Color? lineColor = null,
+    bool showElementCount = false,
+    bool plotOutliers = false,
+    System.Drawing.Color? outlierColor = null,
+    float outlierSize = 6f)
     {
         if (table == null) throw new ArgumentNullException(nameof(table));
         if (formsPlot == null) throw new ArgumentNullException(nameof(formsPlot));
@@ -215,7 +218,8 @@ public static class ScottPlotGraph
             int i = 1;
             foreach (var g in grouped)
             {
-                var values = g.Select(r => Convert.ToDouble(r[valueColumn])).Where(d => !double.IsNaN(d) && !double.IsInfinity(d)).ToList();
+                var values = g.Select(r => Convert.ToDouble(r[valueColumn]))
+                              .Where(d => !double.IsNaN(d) && !double.IsInfinity(d)).ToList();
                 if (values.Count == 0) continue;
                 if (showElementCount) counts = $", {values.Count}";
                 groups.Add((Label: g.Key.Trim() + counts, Position: i, Values: values));
@@ -230,7 +234,6 @@ public static class ScottPlotGraph
                 {
                     object? obj = r[groupColumn];
                     if (obj is DateTime dt) return (Ok: true, Dt: dt, Row: r);
-                    // try convert
                     if (DateTime.TryParse(Convert.ToString(obj), out DateTime parsed))
                         return (Ok: true, Dt: parsed, Row: r);
                     return (Ok: false, Dt: DateTime.MinValue, Row: r);
@@ -258,20 +261,17 @@ public static class ScottPlotGraph
 
             foreach (var g in grouped.OrderBy(g => g.Key))
             {
-                var values = g.Select(x => Convert.ToDouble(x.Row[valueColumn])).Where(d => !double.IsNaN(d) && !double.IsInfinity(d)).ToList();
+                var values = g.Select(x => Convert.ToDouble(x.Row[valueColumn]))
+                              .Where(d => !double.IsNaN(d) && !double.IsInfinity(d)).ToList();
                 if (values.Count == 0) continue;
 
-                // determine position (OADate) from the group's representative DateTime (first result)
-                DateTime repDt = g.First().Dt;
-                double pos = (grouping == BoxGrouping.Yyyymmdd) ? DateTime.ParseExact(g.Key, "yyyyMMdd", CultureInfo.InvariantCulture).ToOADate()
-                                    : DateTime.ParseExact(g.Key, "yyyy-MM-dd", CultureInfo.InvariantCulture).ToOADate();
+                double pos = (grouping == BoxGrouping.Yyyymmdd)
+                    ? DateTime.ParseExact(g.Key, "yyyyMMdd", CultureInfo.InvariantCulture).ToOADate()
+                    : DateTime.ParseExact(g.Key, "yyyy-MM-dd", CultureInfo.InvariantCulture).ToOADate();
 
                 if (showElementCount) counts = $", {values.Count}";
-                // user-visible label (for category-like axis if desired)
-                string label = (grouping == BoxGrouping.Yyyymmdd) ?
-                    DateTime.ParseExact(g.Key, "yyyyMMdd", CultureInfo.InvariantCulture).
-                            ToString("yyyy-MM-dd", CultureInfo.InvariantCulture).
-                            Trim() + counts
+                string label = (grouping == BoxGrouping.Yyyymmdd)
+                    ? DateTime.ParseExact(g.Key, "yyyyMMdd", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture).Trim() + counts
                     : g.Key.Trim() + counts;
 
                 groups.Add((Label: label, Position: pos, Values: values));
@@ -281,8 +281,11 @@ public static class ScottPlotGraph
         if (groups.Count == 0)
             throw new InvalidOperationException("No groups with numeric values were found.");
 
-        // Create box objects
+        // Create box objects and (optionally) collect outliers
         var boxes = new List<ScottPlot.Box>();
+        var outlierXs = new List<double>(); // accumulated across all groups
+        var outlierYs = new List<double>();
+
         int idx = 0;
         foreach (var grp in groups)
         {
@@ -302,10 +305,23 @@ public static class ScottPlotGraph
                 box.FillColor = ScottPlot.Color.FromColor(color.Value);
             if (lineColor.HasValue)
                 box.LineColor = ScottPlot.Color.FromColor(lineColor.Value);
+
             boxes.Add(box);
+
+            if (plotOutliers)
+            {
+                foreach (double v in grp.Values)
+                {
+                    if (v < stats.WhiskerMin || v > stats.WhiskerMax)
+                    {
+                        outlierXs.Add(grp.Position);
+                        outlierYs.Add(v);
+                    }
+                }
+            }
         }
 
-        // Add all boxes as a single Boxes plottable (gives a single legend entry)
+        // Add all boxes as a single Boxes plottable (single legend entry)
         var boxesPlottable = formsPlot.Plot.Add.Boxes(boxes);
         if (!string.IsNullOrWhiteSpace(legendName))
             boxesPlottable.LegendText = legendName;
@@ -313,39 +329,57 @@ public static class ScottPlotGraph
         // If we want the right axis for this plottable, make the right axis visible and tell the plottable to use it
         if (rightAxis)
         {
-            formsPlot.Plot.Axes.Right.IsVisible = true; // make the right axis visible
-            // returned plottable type supports Axes property, so set YAxis to Right
+            formsPlot.Plot.Axes.Right.IsVisible = true;
             boxesPlottable.Axes.YAxis = formsPlot.Plot.Axes.Right;
         }
 
-        // Configure X axis depending on grouping
+        IPlottable? outliersPlottable = null;
+        if (plotOutliers && outlierXs.Count > 0)
+        {
+            var sp = formsPlot.Plot.Add.Scatter(outlierXs, outlierYs);
+            sp.LineStyle = ScottPlot.LineStyle.None;      // markers only
+            sp.MarkerShape = ScottPlot.MarkerShape.FilledCircle;
+            sp.MarkerSize = outlierSize;
+            if (outlierColor.HasValue)
+                sp.Color = ScottPlot.Color.FromColor(outlierColor.Value);
+            else if (color.HasValue)
+                sp.Color = ScottPlot.Color.FromColor(color.Value); // default to series color
+
+            if (rightAxis)
+                sp.Axes.YAxis = formsPlot.Plot.Axes.Right;
+
+            if (!string.IsNullOrWhiteSpace(legendName))
+                sp.LegendText = legendName + " (outliers)";
+
+            outliersPlottable = sp;
+        }
+
         if (groups.Count > 0)
         {
             if (grouping == BoxGrouping.Category)
             {
-                // numeric positions 1..N with labeled ticks
-                var ticks = new Tick[groups.Count];
+                var ticks = new ScottPlot.Tick[groups.Count];
                 for (int i = 0; i < groups.Count; i++)
-                    ticks[i] = new Tick(i + 1, groups[i].Label);
-                formsPlot.Plot.Axes.Bottom.TickGenerator = new NumericManual(ticks);
-                // ensure left/right autoscaling
+                    ticks[i] = new ScottPlot.Tick(i + 1, groups[i].Label);
+                formsPlot.Plot.Axes.Bottom.TickGenerator = new ScottPlot.TickGenerators.NumericManual(ticks);
                 formsPlot.Plot.Axes.AutoScale();
             }
             else
             {
-                // DateTime axis on bottom
                 formsPlot.Plot.Axes.DateTimeTicksBottom();
-                // optionally AutoScale to include boxes
-                formsPlot.Plot.Axes.AutoScale(); // note: AutoScale works on primary axes; if using right axis for Y, it will still correctly position X
+                formsPlot.Plot.Axes.AutoScale();
             }
         }
 
-        // Title, legend, dictionary entry, refresh
         if (!string.IsNullOrWhiteSpace(title))
             formsPlot.Plot.Title(title);
 
         if (dict is not null && !string.IsNullOrWhiteSpace(legendName))
+        {
             dict[legendName] = boxesPlottable;
+            if (outliersPlottable is not null)
+                dict[legendName + " (outliers)"] = outliersPlottable;
+        }
 
         formsPlot.Refresh();
 
