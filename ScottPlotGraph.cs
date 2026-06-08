@@ -124,7 +124,13 @@ public static class ScottPlotGraph
     {
         return CreateSignalXY(xs, ys, formsPlot, legendName, dict, color, rightAxis: true);
     }
-
+    public static IPlottable CreateSignalXYSecondary(double[] xs, double[] ys, FormsPlot formsPlot,
+        string legendName,
+        Dictionary<string, IPlottable>? dict = null,
+        Color? color = null)
+    {
+        return CreateSignalXY(xs, ys, formsPlot, legendName, dict, color, rightAxis: true);
+    }
     public static IPlottable CreateScatterSecondary(DateTime[] xs, double[] ys, FormsPlot formsPlot,
         string legendName,
         Dictionary<string, IPlottable>? dict = null,
