@@ -72,7 +72,21 @@ public static class ScottPlotGraph
         formsPlot.Refresh();
         return sig;
     }
+    public static IPlottable CreateSignalXY(double[] xs, double[] ys, FormsPlot formsPlot,
+        string legendName,
+        Dictionary<string, IPlottable>? dict = null,
+        Color? color = null,
+        bool rightAxis = false)
+    {
+        var sig = formsPlot.Plot.Add.SignalXY(xs, ys);
+        sig.LegendText = legendName;
+        if (color.HasValue) sig.Color = color.Value;
+        if (rightAxis) sig.Axes.YAxis = formsPlot.Plot.Axes.Right;
+        if (dict is not null) dict[legendName] = sig;
 
+        formsPlot.Refresh();
+        return sig;
+    }
     public static IPlottable CreateDataLogger(DateTime[] xs, double[] ys, FormsPlot formsPlot,
         string legendName,
         Dictionary<string, IPlottable>? dict = null,
