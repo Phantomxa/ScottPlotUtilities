@@ -217,6 +217,7 @@ public static class ScottPlotGraph
     System.Drawing.Color? lineColor = null,
     bool showElementCount = false,
     bool plotOutliers = false,
+    bool showOutliersLegendName = false,
     System.Drawing.Color? outlierColor = null,
     float outlierSize = 6f)
     {
@@ -372,7 +373,7 @@ public static class ScottPlotGraph
             if (rightAxis)
                 sp.Axes.YAxis = formsPlot.Plot.Axes.Right;
 
-            if (!string.IsNullOrWhiteSpace(legendName))
+            if (!string.IsNullOrWhiteSpace(legendName) && showOutliersLegendName)
                 sp.LegendText = legendName + " (outliers)";
 
             outliersPlottable = sp;
