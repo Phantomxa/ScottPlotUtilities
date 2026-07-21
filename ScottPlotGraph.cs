@@ -238,8 +238,10 @@ public static class ScottPlotGraph
             int i = 1;
             foreach (var g in grouped)
             {
-                var values = g.Select(r => Convert.ToDouble(r[valueColumn]))
+                var values = g.Where(r => r[valueColumn] != DBNull.Value && r[valueColumn] != null)
+                              .Select(r => Convert.ToDouble(r[valueColumn]))
                               .Where(d => !double.IsNaN(d) && !double.IsInfinity(d)).ToList();
+
                 if (values.Count == 0) continue;
                 if (showElementCount) counts = $", {values.Count}";
                 groups.Add((Label: g.Key.Trim() + counts, Position: i, Values: values));
@@ -281,8 +283,10 @@ public static class ScottPlotGraph
 
             foreach (var g in grouped.OrderBy(g => g.Key))
             {
-                var values = g.Select(x => Convert.ToDouble(x.Row[valueColumn]))
+                var values = g.Where(x => x.Row[valueColumn] != DBNull.Value && x.Row[valueColumn] != null)
+                              .Select(x => Convert.ToDouble(x.Row[valueColumn]))
                               .Where(d => !double.IsNaN(d) && !double.IsInfinity(d)).ToList();
+                
                 if (values.Count == 0) continue;
 
                 double pos = (grouping == BoxGrouping.Yyyymmdd)
